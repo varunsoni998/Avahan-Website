@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeStore();
     renderTicker();
     renderJerseys();
+    renderSportWall();
     renderSportsTape();
     renderLeaderboard();
     renderNews();
@@ -108,6 +109,24 @@ function renderJerseys() {
             <span>${escapeHtml(DEPT_INFO[code] ? DEPT_INFO[code].name : '')}</span>
         </a>
     `).join('');
+}
+
+function renderSportWall() {
+    const el = document.getElementById('sportWall');
+    if (!el) return;
+    const store = getStore();
+    const list = (store.tournaments || []).slice(0, 14);
+    el.innerHTML = list.map((t, i) => {
+        const open = t.status === 'OPEN';
+        return `
+        <button class="wall-tile ${i === 0 ? 'featured' : ''}" data-sport="${escapeHtml(t.sport)}" style="--i:${i}"
+                onclick="openRegistrationModal('${t.id}')" title="Register for ${escapeHtml(t.name)}">
+            <img src="${resolveArt(t.banner, t.sport)}" alt="" loading="${i < 6 ? 'eager' : 'lazy'}">
+            <span class="wall-name">${escapeHtml(t.sport)}</span>
+            ${i === 0 ? `<span class="wall-cta">Register squad <i data-lucide="arrow-right"></i></span>` : ''}
+            ${open ? '' : '<span class="wall-closed">Closed</span>'}
+        </button>`;
+    }).join('');
 }
 
 function renderSportsTape() {

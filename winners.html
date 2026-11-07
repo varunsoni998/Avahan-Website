@@ -12,11 +12,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&family=Graduate&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/styles.css">
+    <script>try { if (!sessionStorage.getItem('avahan_intro_seen')) document.documentElement.classList.add('show-intro'); } catch (e) {}</script>
+
 
     <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body class="page-winners">
+
+    <!-- Intro screen: shown once per visit, click Kick off to enter -->
+    <div id="intro" class="intro" role="dialog" aria-modal="true" aria-label="Welcome to AVAHAN 2027">
+        <div class="intro-half top"></div>
+        <div class="intro-half bottom"></div>
+        <div class="intro-stripes" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="intro-inner">
+            <img class="intro-crest" src="assets/vcet_logo_white.png" alt="VCET crest">
+            <p class="intro-kicker">VCET Sports Committee presents</p>
+            <h2 class="intro-title">Avahan <span>2027</span></h2>
+            <span class="intro-tag">#MORE THAN A GAME</span>
+            <div class="intro-count" id="introCount" aria-live="polite">
+                <div><b id="icDays">00</b><span>Days</span></div>
+                <div><b id="icHours">00</b><span>Hours</span></div>
+                <div><b id="icMins">00</b><span>Min</span></div>
+                <div><b id="icSecs">00</b><span>Sec</span></div>
+            </div>
+            <p class="intro-when">9–11 January 2027 · VCET campus, Vasai</p>
+            <button type="button" class="kickoff" id="kickoffBtn">
+                <span class="kick-ball-btn" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#fff" stroke="#16130e" stroke-width="4"/><path d="M32 21l10 7-4 12H26l-4-12z" fill="#16130e"/><path d="M32 21V5M42 28l15-5M38 40l9 13M26 40l-9 13M22 28L7 23" stroke="#16130e" stroke-width="3"/></svg></span>
+                <span class="kick-label">Kick off</span>
+            </button>
+            <p class="intro-hint">Click the ball or press Enter</p>
+        </div>
+    </div>
+
 
     <!-- Notice bar -->
     <div class="notice">
@@ -145,6 +173,7 @@
     <script src="js/winners.js"></script>
     <script src="js/app.js"></script>
     <script src="js/fx.js"></script>
+    <script src="js/intro.js"></script>
     <script src="js/winners-page.js"></script>
 </body>
 </html>

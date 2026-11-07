@@ -54,10 +54,10 @@
 
     document.addEventListener('click', (e) => {
         if (reduce) return;
-        const btn = e.target.closest('.btn-primary, .btn-yellow, .tourn-body .btn, .jersey');
+        const btn = e.target.closest('.btn-primary, .btn-yellow, .tourn-body .btn, .jersey, .wall-tile');
         if (!btn || btn.disabled) return;
         const card = btn.closest('.tourn-card');
-        const kind = card ? ballForSport((card.querySelector('.sport') || {}).textContent) : 'football';
+        const kind = card ? ballForSport((card.querySelector('.sport') || {}).textContent) : (btn.dataset.sport ? ballForSport(btn.dataset.sport) : 'football');
         let x = e.clientX, y = e.clientY;
         if (!x && !y) { const r = btn.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top + r.height / 2; }
         launch(x, y, kind);
@@ -65,7 +65,7 @@
 
     /* ---------------- Scroll: balls fly off the hero ---------------- */
     function setupHeroBalls() {
-        const board = document.querySelector('.rivalry');
+        const board = document.querySelector('.sport-wall') || document.querySelector('.rivalry');
         if (!board || reduce) return;
         const set = [
             { kind: 'football', cls: 'hb-1', dx: -0.3, dy: -0.55, spin: 0.8 },
