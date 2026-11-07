@@ -1683,3 +1683,69 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
     .jerseys-row { grid-template-columns: repeat(4, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { .wall-tile { animation: none; } }
+
+/* Intro: glass smash */
+.intro-fly-ball { position: fixed; z-index: 260; pointer-events: none; will-change: transform, opacity; filter: drop-shadow(0 10px 0 rgba(0,0,0,.45)); }
+.intro-fly-ball svg { width: 100%; height: 100%; display: block; }
+.intro.kicked .kick-label { transform: scale(.94); opacity: .5; transition: opacity 300ms, transform 300ms; }
+.intro.kicked .intro-hint { opacity: 0; transition: opacity 200ms; }
+.intro.impact { animation: glassShake 380ms cubic-bezier(.36,.07,.19,.97); }
+@keyframes glassShake {
+    10%, 90% { transform: translate(-2px, 1px); }
+    20%, 80% { transform: translate(4px, -2px); }
+    30%, 50%, 70% { transform: translate(-7px, 3px); }
+    40%, 60% { transform: translate(7px, -3px); }
+}
+.intro-cracks { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; overflow: visible; }
+.intro-cracks polyline, .intro-cracks line {
+    fill: none; stroke: rgba(255,255,255,.92); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round;
+    stroke-dasharray: 1; stroke-dashoffset: 1;
+    filter: drop-shadow(0 0 1px rgba(255,255,255,.6)) drop-shadow(1px 1px 0 rgba(0,0,0,.5));
+    animation: crackGrow 360ms cubic-bezier(.2,.7,.3,1) forwards;
+}
+.intro-cracks .ring { stroke-width: 1.6; stroke: rgba(255,255,255,.75); animation-delay: var(--d, 0ms); }
+.intro-cracks .hair { stroke-width: 1; stroke: rgba(255,255,255,.6); animation-duration: 240ms; }
+@keyframes crackGrow { to { stroke-dashoffset: 0; } }
+.intro-flash {
+    position: fixed; inset: 0; z-index: 255; pointer-events: none;
+    background: radial-gradient(circle at var(--x) var(--y), rgba(255,255,255,.95) 0, rgba(255,255,255,.35) 90px, transparent 260px);
+    animation: flashOut 450ms ease-out forwards;
+}
+@keyframes flashOut { from { opacity: 1; } to { opacity: 0; } }
+.intro.broken { background: transparent; }
+.intro-shards { position: absolute; inset: 0; }
+.intro-shard {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    will-change: transform, opacity;
+}
+.intro-shard::after {
+    content: ''; position: absolute; inset: 0; z-index: 4;
+    background: linear-gradient(135deg, rgba(255,255,255,.09), transparent 40%, rgba(255,255,255,.04) 70%, transparent);
+    pointer-events: none;
+}
+.intro-shard > .intro-half { transition: none; }
+.intro-shard > *:not(.intro-half):not(.intro-stripes) { animation: none !important; }
+.intro-shard .intro-inner * { animation: none !important; }
+.intro.fade-out { opacity: 0; transition: opacity 300ms; }
+.intro-shard .intro-stripes span { animation: none !important; transform: rotate(-14deg) !important; }
+.intro-shard .intro-inner { transition: none; }
+
+/* Realistic glass shards */
+.intro-shards { position: absolute; inset: 0; perspective: 1400px; }
+.intro-shard { position: absolute; inset: auto; display: block; overflow: hidden; will-change: transform, opacity; }
+.intro-shard::after { display: none; }
+.shard-scene { position: absolute; display: flex; align-items: center; justify-content: center; }
+.shard-scene .intro-half { transition: none; }
+.shard-scene .intro-stripes span { animation: none !important; transform: rotate(-14deg) !important; }
+.shard-scene .intro-inner, .shard-scene .intro-inner * { animation: none !important; transition: none !important; }
+.shard-glint { position: absolute; left: 0; top: 0; pointer-events: none; }
+.glass-bit {
+    position: absolute; z-index: 6;
+    background: linear-gradient(135deg, #ffffff, rgba(200,225,255,.55) 60%, rgba(255,255,255,.9));
+    clip-path: polygon(50% 0, 100% 70%, 20% 100%);
+    box-shadow: 0 0 6px rgba(220,235,255,.9);
+    will-change: transform, opacity;
+}
+.intro-cracks polyline { animation-delay: var(--d, 0ms); }
+.intro-cracks .core { fill: rgba(255,255,255,.18); stroke: rgba(255,255,255,.9); stroke-width: 2; stroke-dasharray: none; animation: none; }

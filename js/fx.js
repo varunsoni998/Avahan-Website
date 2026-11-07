@@ -12,8 +12,8 @@
     const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const INK = '#16130e';
 
-    const BALLS = {
-        football: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#fff" stroke="${INK}" stroke-width="4"/><path d="M32 21l10 7-4 12H26l-4-12z" fill="${INK}"/><path d="M32 21V5M42 28l15-5M38 40l9 13M26 40l-9 13M22 28L7 23" stroke="${INK}" stroke-width="3"/></svg>`,
+    const BALLS_RAW = {
+        football: `<svg viewBox="0 0 100 100"><defs><clipPath id="fbClip"><circle cx="50" cy="50" r="46"/></clipPath><radialGradient id="fbShade" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#ffffff"/><stop offset=".65" stop-color="#f2f0ea"/><stop offset="1" stop-color="#bdb7aa"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#fbShade)"/><g clip-path="url(#fbClip)"><g fill="#16130e"><polygon points="50.0,36.5 62.8,45.8 57.9,60.9 42.1,60.9 37.2,45.8"/><polygon points="50.0,23.5 38.1,14.9 42.7,0.9 57.3,0.9 61.9,14.9"/><polygon points="75.2,41.8 79.7,27.8 94.4,27.8 99.0,41.8 87.1,50.4"/><polygon points="65.6,71.4 80.3,71.4 84.8,85.4 72.9,94.1 61.0,85.4"/><polygon points="34.4,71.4 39.0,85.4 27.1,94.1 15.2,85.4 19.7,71.4"/><polygon points="24.8,41.8 12.9,50.4 1.0,41.8 5.6,27.8 20.3,27.8"/></g><g stroke="#16130e" stroke-width="2.2" stroke-linecap="round"><line x1="50.0" y1="36.5" x2="50.0" y2="23.5"/><line x1="62.8" y1="45.8" x2="75.2" y2="41.8"/><line x1="57.9" y1="60.9" x2="65.6" y2="71.4"/><line x1="42.1" y1="60.9" x2="34.4" y2="71.4"/><line x1="37.2" y1="45.8" x2="24.8" y2="41.8"/><line x1="61.9" y1="14.9" x2="74.1" y2="16.8"/><line x1="79.7" y1="27.8" x2="74.1" y2="16.8"/><line x1="74.1" y1="16.8" x2="82.9" y2="4.7"/><line x1="87.1" y1="50.4" x2="89.0" y2="62.7"/><line x1="80.3" y1="71.4" x2="89.0" y2="62.7"/><line x1="89.0" y1="62.7" x2="103.3" y2="67.3"/><line x1="61.0" y1="85.4" x2="50.0" y2="91.0"/><line x1="39.0" y1="85.4" x2="50.0" y2="91.0"/><line x1="50.0" y1="91.0" x2="50.0" y2="106.0"/><line x1="19.7" y1="71.4" x2="11.0" y2="62.7"/><line x1="12.9" y1="50.4" x2="11.0" y2="62.7"/><line x1="11.0" y1="62.7" x2="-3.3" y2="67.3"/><line x1="20.3" y1="27.8" x2="25.9" y2="16.8"/><line x1="38.1" y1="14.9" x2="25.9" y2="16.8"/><line x1="25.9" y1="16.8" x2="17.1" y2="4.7"/><line x1="42.7" y1="0.9" x2="41.7" y2="-5.4"/><line x1="57.3" y1="0.9" x2="58.3" y2="-5.4"/><line x1="94.4" y1="27.8" x2="100.1" y2="25.0"/><line x1="99.0" y1="41.8" x2="105.2" y2="40.8"/><line x1="84.8" y1="85.4" x2="89.3" y2="89.9"/><line x1="72.9" y1="94.1" x2="75.9" y2="99.7"/><line x1="27.1" y1="94.1" x2="24.1" y2="99.7"/><line x1="15.2" y1="85.4" x2="10.7" y2="89.9"/><line x1="1.0" y1="41.8" x2="-5.2" y2="40.8"/><line x1="5.6" y1="27.8" x2="-0.1" y2="25.0"/></g><circle cx="50" cy="50" r="46" fill="none" stroke="#000" stroke-opacity=".14" stroke-width="9"/><ellipse cx="35" cy="27" rx="11" ry="5.5" fill="#fff" fill-opacity=".5" transform="rotate(-32 35 27)"/></g><circle cx="50" cy="50" r="46" fill="none" stroke="#16130e" stroke-width="4.5"/></svg>`,
         cricket: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#c8202f" stroke="${INK}" stroke-width="4"/><path d="M20 8c10 14 10 34 0 48M27 6c10 16 10 36 0 52" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="3 4"/></svg>`,
         volleyball: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#ffc82c" stroke="${INK}" stroke-width="4"/><path d="M32 4c-4 14 0 22 10 28M8 22c12 2 20 8 24 10M10 48c10-10 16-14 22-16 8 6 12 14 12 26" fill="none" stroke="#2346c8" stroke-width="4"/></svg>`,
         shuttle: `<svg viewBox="0 0 64 64"><path d="M20 6l12 30 12-30z" fill="#fff" stroke="${INK}" stroke-width="3.5" stroke-linejoin="round"/><path d="M26 8l6 26M38 8l-6 26" stroke="${INK}" stroke-width="2"/><path d="M24 36h16v6a8 8 0 01-16 0z" fill="#d7263d" stroke="${INK}" stroke-width="3.5"/></svg>`,
@@ -21,6 +21,16 @@
         chess: `<svg viewBox="0 0 64 64"><path d="M22 56h20l-3-8H25zM26 48l2-16h8l2 16M24 32h16M28 24a6 6 0 118 0" fill="#fff" stroke="${INK}" stroke-width="3.5" stroke-linejoin="round"/></svg>`,
         carrom: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="#d7263d" stroke="${INK}" stroke-width="4"/><circle cx="32" cy="32" r="12" fill="none" stroke="#fff" stroke-width="3"/></svg>`
     };
+    // Every ball drawing gets its own internal ids, so several on one page never clash
+    let ballUid = 0;
+    const BALLS = new Proxy(BALLS_RAW, {
+        get: (t, k) => {
+            const s = t[k];
+            if (typeof s !== 'string') return s;
+            const n = ++ballUid;
+            return s.replace(/fb(Clip|Shade)/g, m => m + 'x' + n);
+        }
+    });
 
     function ballForSport(text) {
         const s = String(text || '').toLowerCase();
