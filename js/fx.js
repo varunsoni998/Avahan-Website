@@ -119,6 +119,7 @@
             lastY = y;
         }, { passive: true });
         const tick = () => {
+            if (document.documentElement.classList.contains('show-intro')) { requestAnimationFrame(tick); return; }
             if (!half) measure();
             x -= 0.6 + boost;
             boost *= 0.9;

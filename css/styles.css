@@ -1685,7 +1685,7 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
 @media (prefers-reduced-motion: reduce) { .wall-tile { animation: none; } }
 
 /* Intro: glass smash */
-.intro-fly-ball { position: fixed; z-index: 260; pointer-events: none; will-change: transform, opacity; filter: drop-shadow(0 10px 0 rgba(0,0,0,.45)); }
+.intro-fly-ball { position: fixed; z-index: 260; pointer-events: none; will-change: transform, opacity; }
 .intro-fly-ball svg { width: 100%; height: 100%; display: block; }
 .intro.kicked .kick-label { transform: scale(.94); opacity: .5; transition: opacity 300ms, transform 300ms; }
 .intro.kicked .intro-hint { opacity: 0; transition: opacity 200ms; }
@@ -1700,7 +1700,6 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
 .intro-cracks polyline, .intro-cracks line {
     fill: none; stroke: rgba(255,255,255,.92); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round;
     stroke-dasharray: 1; stroke-dashoffset: 1;
-    filter: drop-shadow(0 0 1px rgba(255,255,255,.6)) drop-shadow(1px 1px 0 rgba(0,0,0,.5));
     animation: crackGrow 360ms cubic-bezier(.2,.7,.3,1) forwards;
 }
 .intro-cracks .ring { stroke-width: 1.6; stroke: rgba(255,255,255,.75); animation-delay: var(--d, 0ms); }
@@ -1733,7 +1732,7 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
 
 /* Realistic glass shards */
 .intro-shards { position: absolute; inset: 0; perspective: 1400px; }
-.intro-shard { position: absolute; inset: auto; display: block; overflow: hidden; will-change: transform, opacity; }
+.intro-shard { position: absolute; inset: auto; display: block; overflow: hidden; will-change: transform, opacity; contain: strict; }
 .intro-shard::after { display: none; }
 .shard-scene { position: absolute; display: flex; align-items: center; justify-content: center; }
 .shard-scene .intro-half { transition: none; }
@@ -1744,8 +1743,13 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
     position: absolute; z-index: 6;
     background: linear-gradient(135deg, #ffffff, rgba(200,225,255,.55) 60%, rgba(255,255,255,.9));
     clip-path: polygon(50% 0, 100% 70%, 20% 100%);
-    box-shadow: 0 0 6px rgba(220,235,255,.9);
     will-change: transform, opacity;
 }
 .intro-cracks polyline { animation-delay: var(--d, 0ms); }
 .intro-cracks .core { fill: rgba(255,255,255,.18); stroke: rgba(255,255,255,.9); stroke-width: 2; stroke-dasharray: none; animation: none; }
+
+/* While the intro is on screen, the page behind it holds still */
+.show-intro .tape-track, .show-intro .ticker-content { animation-play-state: paused !important; }
+.intro-cracks polyline, .intro-cracks line { stroke-width: 2.4; }
+.intro-canvas { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
+.intro.broken { background: transparent; animation: none; }

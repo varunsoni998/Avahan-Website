@@ -1,8 +1,12 @@
 /**
  * Intro screen · shown once per visit (per browser tab session).
- * Live countdown to AVAHAN 2027. Clicking "Kick off" kicks the ball toward
- * the viewer; it smashes the screen like glass, cracks spread from the impact,
- * and the shards fall away to reveal the website.
+ * Live countdown to AVAHAN 2027. Clicking "Kick off" kicks the ball into the
+ * screen; it smashes it like glass, cracks spread from the impact, and the
+ * shards fall away to reveal the website.
+ *
+ * Performance: the intro is snapshotted once into an image, and all cracks and
+ * shards are drawn on ONE canvas (like a game), so it stays smooth even on
+ * laptops and phones without strong graphics.
  */
 (function () {
     const root = document.documentElement;
@@ -56,20 +60,20 @@
         });
     }
 
-    /* Glass geometry: jagged rays out from the impact point, cut by uneven rings.
-       Shared edges use the same jittered points, so cracks and shards line up. */
+    /* ---------------- Glass geometry ----------------
+       Jagged rays out from the impact point, cut by uneven rings. Shared edges
+       use the same jittered points, so cracks and shards line up. */
     function buildGlass(cx, cy, W, H) {
         const R = Math.hypot(Math.max(cx, W - cx), Math.max(cy, H - cy)) * 1.3;
-        const rays = 10;
+        const rays = 11;
         const base = rand(0, Math.PI * 2);
         const angles = Array.from({ length: rays }, (_, i) => base + (i + rand(-0.3, 0.3)) * (Math.PI * 2 / rays));
-        const rings = [0, rand(45, 70), rand(120, 170), rand(240, 320), rand(420, 540), R];
+        const rings = [0, rand(40, 65), rand(110, 160), rand(230, 310), rand(400, 520), R];
         const P = rings.map((r, j) => angles.map(a => {
             const jr = j === 0 || j === rings.length - 1 ? r : r * rand(0.8, 1.2);
             const ja = j === 0 ? a : a + rand(-0.06, 0.06);
             return [cx + Math.cos(ja) * jr, cy + Math.sin(ja) * jr];
         }));
-        // jittered midpoint on each ray segment, so radial cracks zig-zag
         const M = rings.slice(0, -1).map((_, j) => angles.map((a, i) => {
             const p = P[j][i], q = P[j + 1][i];
             const t = rand(0.35, 0.65), off = rand(-14, 14) * (j + 1) * 0.6;
@@ -80,12 +84,10 @@
             for (let i = 0; i < rays; i++) {
                 const n = (i + 1) % rays;
                 let polys;
-                if (j === 0) {
-                    polys = [[P[0][i], M[0][i], P[1][i], P[1][n], M[0][n]]];
-                } else {
+                if (j === 0) polys = [[P[0][i], M[0][i], P[1][i], P[1][n], M[0][n]]];
+                else {
                     const quad = [P[j][i], M[j][i], P[j + 1][i], P[j + 1][n], M[j][n], P[j][n]];
-                    // split most pieces along a diagonal into long, sharp triangles
-                    polys = Math.random() < 0.6
+                    polys = Math.random() < 0.65
                         ? (Math.random() < 0.5
                             ? [[P[j][i], M[j][i], P[j + 1][i], P[j + 1][n]], [P[j][i], P[j + 1][n], M[j][n], P[j][n]]]
                             : [[P[j][i], M[j][i], P[j + 1][i], P[j][n]], [P[j + 1][i], P[j + 1][n], M[j][n], P[j][n]]])
@@ -93,54 +95,148 @@
                 }
                 polys.forEach(poly => {
                     const c = poly.reduce((acc, p) => [acc[0] + p[0] / poly.length, acc[1] + p[1] / poly.length], [0, 0]);
-                    shards.push({ poly, c, ring: j });
+                    const xs = poly.map(p => p[0]), ys = poly.map(p => p[1]);
+                    shards.push({ poly, c, ring: j,
+                        bx: Math.min(...xs), by: Math.min(...ys), bw: Math.max(...xs) - Math.min(...xs), bh: Math.max(...ys) - Math.min(...ys) });
                 });
             }
         }
-        // cracks: zig-zag rays, uneven web rings, and hairline splinters at the centre
-        let cracks = '';
+        // crack lines: zig-zag rays, uneven web rings, hairline splinters at the centre
+        const cracks = [];
         angles.forEach((a, i) => {
             const line = [];
-            for (let j = 0; j < rings.length - 2; j++) { line.push(P[j][i], M[j][i]); }
+            for (let j = 0; j < rings.length - 2; j++) line.push(P[j][i], M[j][i]);
             line.push(P[rings.length - 2][i]);
-            cracks += `<polyline points="${line.map(p => p.join(',')).join(' ')}" pathLength="1" style="--d:${rand(0, 60)}ms"/>`;
+            cracks.push({ pts: line, delay: rand(0, 60), w: 2.2, a: 0.95 });
         });
-        for (let j = 1; j < rings.length - 1; j++) {
-            const ring = P[j].concat([P[j][0]]);
-            cracks += `<polyline class="ring" points="${ring.map(p => p.join(',')).join(' ')}" pathLength="1" style="--d:${80 + j * 70}ms"/>`;
-        }
-        for (let k = 0; k < 26; k++) {
+        for (let j = 1; j < rings.length - 1; j++) cracks.push({ pts: P[j].concat([P[j][0]]), delay: 80 + j * 70, w: 1.6, a: 0.75 });
+        for (let k = 0; k < 14; k++) {
             const a = rand(0, Math.PI * 2), r1 = rand(4, 30), r2 = r1 + rand(20, 90);
-            cracks += `<line x1="${cx + Math.cos(a) * r1}" y1="${cy + Math.sin(a) * r1}" x2="${cx + Math.cos(a) * r2}" y2="${cy + Math.sin(a) * r2}" pathLength="1" class="hair"/>`;
+            cracks.push({ pts: [[cx + Math.cos(a) * r1, cy + Math.sin(a) * r1], [cx + Math.cos(a) * r2, cy + Math.sin(a) * r2]], delay: 0, w: 1, a: 0.6 });
         }
+        cracks.forEach(cr => {   // pre-compute lengths so they can "grow"
+            let L = 0; cr.seg = [];
+            for (let k = 1; k < cr.pts.length; k++) { const d = Math.hypot(cr.pts[k][0] - cr.pts[k - 1][0], cr.pts[k][1] - cr.pts[k - 1][1]); cr.seg.push(d); L += d; }
+            cr.len = L;
+        });
         return { shards, cracks };
     }
 
-    /* One shard: only as big as its own bounding box (keeps it light on phones),
-       showing its slice of the intro, with a glinting glass edge on top */
-    function makeShard(sh, sceneHTML, W, H, uid) {
-        const xs = sh.poly.map(p => p[0]), ys = sh.poly.map(p => p[1]);
-        const bx = Math.max(-40, Math.floor(Math.min(...xs))), by = Math.max(-40, Math.floor(Math.min(...ys)));
-        const bw = Math.min(W + 40, Math.ceil(Math.max(...xs))) - bx, bh = Math.min(H + 40, Math.ceil(Math.max(...ys))) - by;
-        if (bw <= 1 || bh <= 1) return null;
-        const rel = sh.poly.map(p => [(p[0] - bx).toFixed(1), (p[1] - by).toFixed(1)]);
-        const el = document.createElement('div');
-        el.className = 'intro-shard';
-        el.style.left = bx + 'px'; el.style.top = by + 'px';
-        el.style.width = bw + 'px'; el.style.height = bh + 'px';
-        el.style.clipPath = `polygon(${rel.map(p => `${p[0]}px ${p[1]}px`).join(',')})`;
-        el.style.transformOrigin = `${sh.c[0] - bx}px ${sh.c[1] - by}px`;
-        const tiny = sh.ring === 0;
-        el.innerHTML = (tiny ? '' : `<div class="shard-scene" style="left:${-bx}px;top:${-by}px;width:${W}px;height:${H}px">${sceneHTML}</div>`) +
-            `<svg class="shard-glint" width="${bw}" height="${bh}" viewBox="0 0 ${bw} ${bh}">
-                <defs><linearGradient id="g${uid}" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stop-color="#fff" stop-opacity="${tiny ? .55 : rand(.12, .26).toFixed(2)}"/>
-                    <stop offset=".45" stop-color="#cfe3ff" stop-opacity="${tiny ? .2 : .03}"/>
-                    <stop offset="1" stop-color="#fff" stop-opacity="${tiny ? .4 : rand(.06, .14).toFixed(2)}"/>
-                </linearGradient></defs>
-                <polygon points="${rel.map(p => p.join(',')).join(' ')}" fill="url(#g${uid})" stroke="rgba(235,245,255,.95)" stroke-width="${tiny ? 2 : 3}"/>
-            </svg>`;
-        return el;
+    /* ---------------- Snapshot the intro into an image ----------------
+       Draws what is on screen (background, stripes, text, boxes, crest) onto a
+       canvas, once. Everything after that animates this single image. */
+    function parseColor(c) { return c && c !== 'transparent' && !/rgba\([^)]*,\s*0\)$/.test(c) ? c : null; }
+    function roundRect(ctx, x, y, w, h, r) {
+        r = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+    }
+    function isRotated(tf) {
+        const m = tf && tf.match(/matrix\(([^)]+)\)/);
+        if (!m) return false;
+        const v = m[1].split(',').map(Number);
+        return Math.abs(v[1]) > 1e-3 || Math.abs(v[2]) > 1e-3;
+    }
+    function withElementTransform(ctx, el, draw) {
+        // apply the element's own CSS rotation around its centre
+        const cs = getComputedStyle(el);
+        const b = el.getBoundingClientRect();
+        const w = el.offsetWidth, h = el.offsetHeight;
+        const cxE = b.left + b.width / 2, cyE = b.top + b.height / 2;
+        ctx.save();
+        ctx.translate(cxE, cyE);
+        if (cs.transform && cs.transform !== 'none') {
+            const m = cs.transform.match(/matrix\(([^)]+)\)/);
+            if (m) { const v = m[1].split(',').map(Number); ctx.transform(v[0], v[1], v[2], v[3], 0, 0); }
+        }
+        draw(-w / 2, -h / 2, w, h, cs);
+        ctx.restore();
+    }
+    function snapshotIntro(W, H, dpr) {
+        const cv = document.createElement('canvas');
+        cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+        const ctx = cv.getContext('2d');
+        ctx.scale(dpr, dpr);
+        ctx.fillStyle = '#16130e';
+        ctx.fillRect(0, 0, W, H);
+        // department-colour hem where the two halves meet
+        const top = intro.querySelector('.intro-half.top');
+        if (top) {
+            const y = top.getBoundingClientRect().bottom;
+            ['#d7263d', '#6a3fb5', '#f26a1b', '#3d4654', '#2346c8', '#0f9b8e', '#1f9e5a', '#ffc82c'].forEach((c, i) => {
+                ctx.fillStyle = c; ctx.fillRect(i * W / 8, y - 8, W / 8 + 1, 8); ctx.fillRect(i * W / 8, y, W / 8 + 1, 8);
+            });
+        }
+        // diagonal stripes
+        intro.querySelectorAll('.intro-stripes span').forEach(s => {
+            withElementTransform(ctx, s, (x, y, w, h, cs) => { ctx.fillStyle = cs.backgroundColor; ctx.fillRect(x, y, w, h); });
+        });
+        const inner = intro.querySelector('.intro-inner');
+        const visible = el => {
+            for (let n = el; n && n !== intro; n = n.parentElement) {
+                const cs = getComputedStyle(n);
+                if (cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.05) return false;
+            }
+            return true;
+        };
+        const drawBox = el => {
+            const cs = getComputedStyle(el);
+            const bg = parseColor(cs.backgroundColor), bw = parseFloat(cs.borderTopWidth) || 0, bc = parseColor(cs.borderTopColor);
+            const sh = cs.boxShadow && cs.boxShadow !== 'none' ? cs.boxShadow.match(/(rgba?\([^)]+\))\s+(-?[\d.]+)px\s+(-?[\d.]+)px/) : null;
+            if (!bg && !(bw && bc) && !sh) return;
+            withElementTransform(ctx, el, (x, y, w, h) => {
+                const r = parseFloat(cs.borderTopLeftRadius) || 0;
+                if (sh) { roundRect(ctx, x + parseFloat(sh[2]), y + parseFloat(sh[3]), w, h, r); ctx.fillStyle = sh[1]; ctx.fill(); }
+                roundRect(ctx, x, y, w, h, r);
+                if (bg) { ctx.fillStyle = bg; ctx.fill(); }
+                if (bw && bc) { ctx.lineWidth = bw; ctx.strokeStyle = bc; roundRect(ctx, x + bw / 2, y + bw / 2, w - bw, h - bw, Math.max(0, r - bw / 2)); ctx.stroke(); }
+            });
+        };
+        const drawText = (node) => {
+            const el = node.parentElement;
+            const text = node.textContent.replace(/\s+/g, ' ').trim();
+            if (!text) return;
+            const cs = getComputedStyle(el);
+            const range = document.createRange(); range.selectNodeContents(node);
+            const r = range.getBoundingClientRect();
+            if (!r.width) return;
+            const t = cs.textTransform === 'uppercase' ? text.toUpperCase() : text;
+            ctx.save();
+            ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+            try { ctx.letterSpacing = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing; } catch (e) {}
+            ctx.fillStyle = cs.color;
+            ctx.globalAlpha = parseFloat(cs.opacity) || 1;
+            const m = ctx.measureText(t);
+            const asc = m.fontBoundingBoxAscent || parseFloat(cs.fontSize) * 0.8, desc = m.fontBoundingBoxDescent || parseFloat(cs.fontSize) * 0.2;
+            // a rotated parent (the yellow tag) rotates its text too
+            let rot = null;
+            for (let n = el; n && n !== inner; n = n.parentElement) { if (isRotated(getComputedStyle(n).transform)) { rot = n; break; } }
+            if (rot) {
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                withElementTransform(ctx, rot, () => { ctx.fillText(t, 0, 1); });
+            } else {
+                ctx.textBaseline = 'alphabetic';
+                ctx.fillText(t, r.left, r.top + (r.height - (asc + desc)) / 2 + asc);
+            }
+            ctx.restore();
+        };
+        if (inner) {
+            drawBox(inner);
+            const walk = (el) => {
+                if (el.closest('svg') && el.tagName.toLowerCase() !== 'svg') return;
+                if (el.classList && (el.classList.contains('kick-ball-btn') || el.classList.contains('kickoff') || el.classList.contains('intro-hint'))) return;
+                if (!visible(el)) return;
+                if (el !== inner) drawBox(el);
+                if (el.tagName === 'IMG' && el.complete) {
+                    const b = el.getBoundingClientRect();
+                    try { ctx.drawImage(el, b.left, b.top, b.width, b.height); } catch (e) {}
+                }
+                el.childNodes.forEach(n => { if (n.nodeType === 3) drawText(n); else if (n.nodeType === 1) walk(n); });
+            };
+            walk(inner);
+        }
+        return cv;
     }
 
     /* ---------------- The smash ---------------- */
@@ -153,13 +249,13 @@
         if (reduce) { intro.classList.add('fade-out'); await wait(300); finish(); return; }
 
         const W = window.innerWidth, H = window.innerHeight;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
         const btnBall = intro.querySelector('.kick-ball-btn');
         const r = btnBall.getBoundingClientRect();
         const sx = r.left + r.width / 2, sy = r.top + r.height / 2;
         const cx = W / 2 + rand(-W * 0.06, W * 0.06), cy = H * 0.4;
 
-        // 1. Kick: the same ball you clicked takes off. A quick squash as it's struck,
-        //    then it flies up and away into the screen, shrinking with distance, at a steady pace.
+        // 1. Kick: the same ball you clicked squashes, then flies up and away into the screen
         const ball = document.createElement('div');
         ball.className = 'intro-fly-ball';
         ball.innerHTML = BALL_SVG;
@@ -167,7 +263,11 @@
         ball.style.left = r.left + 'px';
         ball.style.top = r.top + 'px';
         document.body.appendChild(ball);
-        btnBall.style.visibility = 'hidden';            // swap happens in the same spot, so it's seamless
+        btnBall.style.visibility = 'hidden';
+
+        // snapshot the screen now (ball hidden, label still crisp), while the ball flies
+        let snap = null;
+        try { snap = snapshotIntro(W, H, dpr); } catch (e) { snap = null; }
         intro.classList.add('kicked');
 
         const dx = cx - sx, dy = cy - sy;
@@ -180,84 +280,161 @@
             { transform: `translate(${dx}px, ${dy}px) scale(${end}) rotate(-620deg)` }
         ], { duration: 950, fill: 'forwards' });
 
-        // While the ball is in the air, prepare the glass so the shatter starts without a hitch
-        const { shards, cracks } = buildGlass(cx, cy, W, H);
-        const scene = [...intro.children];
-        const sceneHTML = scene.map(el => el.outerHTML).join('').replace(/\sid="[^"]*"/g, '');
-        const layer = document.createElement('div');
-        layer.className = 'intro-shards';
-        layer.style.perspectiveOrigin = `${cx}px ${cy}px`;
-        layer.style.visibility = 'hidden';
-        const maxD = Math.hypot(W, H);
-        const anims = [];
-        shards.forEach((sh, k) => {
-            const el = makeShard(sh, sceneHTML, W, H, k);
-            if (!el) return;
-            layer.appendChild(el);
-            const dist = Math.hypot(sh.c[0] - cx, sh.c[1] - cy);
-            const near = 1 - Math.min(1, dist / (maxD * 0.6));
-            const away = Math.atan2(sh.c[1] - cy, sh.c[0] - cx);
-            const out = rand(30, 90) + near * rand(120, 280);
-            anims.push({
-                el,
-                ox: Math.cos(away) * out, oy: Math.sin(away) * out,
-                z: -(rand(40, 140) + near * rand(160, 420)),
-                rx: rand(-160, 160), ry: rand(-160, 160), rz: rand(-120, 120),
-                delay: (dist / maxD) * 180 + rand(0, 60),
-                dur: rand(1400, 1850)
-            });
-        });
-        for (let k = 0; k < 45; k++) {
-            const el = document.createElement('div');
-            el.className = 'glass-bit';
-            const s = rand(3, 11);
-            el.style.width = s + 'px'; el.style.height = s * rand(0.6, 1.8) + 'px';
-            el.style.left = (cx + rand(-30, 30)) + 'px'; el.style.top = (cy + rand(-30, 30)) + 'px';
-            layer.appendChild(el);
-            const a = rand(0, Math.PI * 2), d = rand(80, 520);
-            anims.push({ el, ox: Math.cos(a) * d, oy: Math.sin(a) * d, z: -rand(80, 600), rx: rand(-540, 540), ry: rand(-540, 540), rz: rand(-360, 360), delay: rand(0, 80), dur: rand(900, 1300), bit: true });
-        }
-        intro.appendChild(layer);
-
+        const glass = buildGlass(cx, cy, W, H);
         await flight.finished.catch(() => {});
         if (finished) return;
 
-        // 2. Impact: the ball punches straight through, the screen shakes, cracks race out
+        if (!snap) {   // could not snapshot: simple, smooth fallback
+            ball.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' });
+            intro.classList.add('fade-out'); await wait(320); finish(); return;
+        }
+
+        // From here on, everything is one canvas
+        const cv = document.createElement('canvas');
+        cv.className = 'intro-canvas';
+        cv.width = snap.width; cv.height = snap.height;
+        cv.style.width = W + 'px'; cv.style.height = H + 'px';
+        const ctx = cv.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.drawImage(snap, 0, 0, W, H);
+        intro.appendChild(cv);
+        [...intro.children].forEach(el => { if (el !== cv) el.style.visibility = 'hidden'; });
+        intro.classList.add('broken');
+
+        // 2. Impact: ball punches through, flash, shake, cracks race out
         ball.animate([
             { transform: `translate(${dx}px, ${dy}px) scale(${end}) rotate(-620deg)`, opacity: 1 },
             { transform: `translate(${dx}px, ${dy - 6}px) scale(${end * 0.4}) rotate(-700deg)`, opacity: 0 }
         ], { duration: 260, easing: 'cubic-bezier(.4,0,.8,.6)', fill: 'forwards' });
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('class', 'intro-cracks');
-        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-        svg.innerHTML = cracks;
-        intro.appendChild(svg);
         const flash = document.createElement('div');
         flash.className = 'intro-flash';
         flash.style.setProperty('--x', cx + 'px');
         flash.style.setProperty('--y', cy + 'px');
         document.body.appendChild(flash);
-        intro.classList.add('impact');
 
-        await wait(440);
+        const drawCracks = (t, alpha) => {
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            glass.cracks.forEach(cr => {
+                const prog = Math.max(0, Math.min(1, (t - cr.delay) / 360));
+                if (prog <= 0) return;
+                let left = cr.len * (1 - Math.pow(1 - prog, 3));
+                ctx.beginPath(); ctx.moveTo(cr.pts[0][0], cr.pts[0][1]);
+                for (let k = 1; k < cr.pts.length && left > 0; k++) {
+                    const d = cr.seg[k - 1], f = Math.min(1, left / d);
+                    ctx.lineTo(cr.pts[k - 1][0] + (cr.pts[k][0] - cr.pts[k - 1][0]) * f, cr.pts[k - 1][1] + (cr.pts[k][1] - cr.pts[k - 1][1]) * f);
+                    left -= d;
+                }
+                ctx.strokeStyle = `rgba(0,0,0,${0.45 * alpha})`; ctx.lineWidth = cr.w + 1.6; ctx.stroke();
+                ctx.strokeStyle = `rgba(240,248,255,${cr.a * alpha})`; ctx.lineWidth = cr.w; ctx.stroke();
+            });
+        };
+
+        const t0 = performance.now();
+        await new Promise(res => {
+            const step = (now) => {
+                if (finished) return res();
+                const t = now - t0;
+                const shake = t < 380 ? Math.sin(t / 22) * 7 * (1 - t / 380) : 0;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                ctx.clearRect(0, 0, W, H);
+                ctx.setTransform(dpr, 0, 0, dpr, shake * dpr, shake * 0.4 * dpr);
+                ctx.drawImage(snap, 0, 0, W, H);
+                drawCracks(t, 1);
+                if (t < 460) requestAnimationFrame(step); else res();
+            };
+            requestAnimationFrame(step);
+        });
         if (finished) return;
 
-        // 3. Shatter: the ball came from the viewer's side, so the glass blows inward,
-        //    away from the viewer, tumbling in 3D as gravity takes it
-        intro.dataset.state = 'shattering';
-        layer.appendChild(svg);
-        layer.style.visibility = '';
-        scene.forEach(el => el.remove());
-        intro.classList.add('broken');
-        svg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 240, fill: 'forwards' });
-
-        const falls = anims.map(a => a.el.animate([
-            { transform: 'translate3d(0,0,0) rotateX(0) rotateY(0) rotateZ(0)', opacity: 1, easing: 'cubic-bezier(.2,.7,.4,1)' },
-            { transform: `translate3d(${a.ox}px, ${a.oy}px, ${a.z}px) rotateX(${a.rx * .3}deg) rotateY(${a.ry * .3}deg) rotateZ(${a.rz * .3}deg)`, opacity: 1, offset: a.bit ? 0.45 : 0.24, easing: 'cubic-bezier(.4,.05,.8,.6)' },
-            { transform: `translate3d(${a.ox * 1.35}px, ${a.oy * 1.2 + H * 1.1}px, ${a.z * 1.15}px) rotateX(${a.rx}deg) rotateY(${a.ry}deg) rotateZ(${a.rz}deg)`, opacity: a.bit ? 0 : 0.85 }
-        ], { duration: a.dur, delay: a.delay, fill: 'forwards' }).finished.catch(() => {}));
-
-        await Promise.all(falls);
+        // 3. Shatter: glass blows inward (away from you), tumbles, glints, and falls
+        const PERSP = 1400, maxD = Math.hypot(W, H);
+        const pieces = glass.shards.map(sh => {
+            const dist = Math.hypot(sh.c[0] - cx, sh.c[1] - cy);
+            const near = 1 - Math.min(1, dist / (maxD * 0.6));
+            const away = Math.atan2(sh.c[1] - cy, sh.c[0] - cx);
+            const out = rand(30, 90) + near * rand(120, 280);
+            return {
+                sh, ox: Math.cos(away) * out, oy: Math.sin(away) * out,
+                z: -(rand(40, 140) + near * rand(160, 420)),
+                rx: rand(-2.6, 2.6), ry: rand(-2.6, 2.6), rz: rand(-2, 2),
+                delay: (dist / maxD) * 180 + rand(0, 60), dur: rand(1400, 1850),
+                sheen: rand(0.03, 0.1)
+            };
+        });
+        const bits = Array.from({ length: 30 }, () => {
+            const a = rand(0, Math.PI * 2), d = rand(80, 520);
+            return { x: cx + rand(-25, 25), y: cy + rand(-25, 25), ox: Math.cos(a) * d, oy: Math.sin(a) * d, s: rand(3, 9), rz: rand(-12, 12), dur: rand(900, 1300), delay: rand(0, 80) };
+        });
+        const easeOut = p => 1 - Math.pow(1 - p, 3);
+        const t1 = performance.now();
+        await new Promise(res => {
+            const step = (now) => {
+                if (finished) return res();
+                const t = now - t1;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                ctx.clearRect(0, 0, W, H);
+                let alive = false;
+                // draw far-flung (outer) pieces first so near ones sit on top
+                for (let i = pieces.length - 1; i >= 0; i--) {
+                    const pc = pieces[i], sh = pc.sh;
+                    const p = Math.max(0, Math.min(1, (t - pc.delay) / pc.dur));
+                    if (p < 1) alive = true;
+                    const burst = easeOut(Math.min(1, p / 0.24));
+                    const fall = Math.max(0, (p - 0.18) / 0.82);
+                    const x = pc.ox * burst + pc.ox * 0.35 * p;
+                    const y = pc.oy * burst + pc.oy * 0.2 * p + H * 1.1 * fall * fall;
+                    const z = pc.z * easeOut(p);
+                    const s = PERSP / (PERSP - z);                       // smaller as it moves away
+                    const ax = pc.rx * p, ay = pc.ry * p;
+                    const fx = Math.max(0.08, Math.abs(Math.cos(ay))), fy = Math.max(0.08, Math.abs(Math.cos(ax)));
+                    const glint = Math.pow(Math.abs(Math.sin(ax * 1.3 + ay)), 6);   // flashes as it turns to the light
+                    const alpha = p > 0.85 ? (1 - p) / 0.15 : 1;
+                    if (alpha <= 0) continue;
+                    ctx.save();
+                    ctx.globalAlpha = alpha;
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    ctx.translate(cx + (sh.c[0] - cx) * s + x * s, cy + (sh.c[1] - cy) * s + y * s);
+                    ctx.rotate(pc.rz * p);
+                    ctx.scale(s * fx, s * fy);
+                    ctx.translate(-sh.c[0], -sh.c[1]);
+                    ctx.beginPath();
+                    sh.poly.forEach((pt, k) => k ? ctx.lineTo(pt[0], pt[1]) : ctx.moveTo(pt[0], pt[1]));
+                    ctx.closePath();
+                    ctx.save();
+                    ctx.clip();
+                    if (sh.ring === 0) { ctx.fillStyle = 'rgba(200,220,240,.35)'; ctx.fill(); }
+                    else {
+                        const sx0 = Math.max(0, sh.bx - 2), sy0 = Math.max(0, sh.by - 2);
+                        const sw = Math.min(W - sx0, sh.bw + 4), shh = Math.min(H - sy0, sh.bh + 4);
+                        if (sw > 0 && shh > 0) ctx.drawImage(snap, sx0 * dpr, sy0 * dpr, sw * dpr, shh * dpr, sx0, sy0, sw, shh);
+                    }
+                    ctx.fillStyle = `rgba(255,255,255,${pc.sheen + glint * 0.45})`;
+                    ctx.fill();
+                    ctx.restore();
+                    ctx.lineWidth = 2 / (s * Math.min(fx, fy));
+                    ctx.strokeStyle = `rgba(235,245,255,${0.55 + glint * 0.45})`;
+                    ctx.stroke();
+                    ctx.restore();
+                }
+                bits.forEach(b => {
+                    const p = Math.max(0, Math.min(1, (t - b.delay) / b.dur));
+                    if (p >= 1) return; alive = true;
+                    const e = easeOut(p);
+                    ctx.save();
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    ctx.globalAlpha = 1 - p;
+                    ctx.translate(b.x + b.ox * e, b.y + b.oy * e + 300 * p * p);
+                    ctx.rotate(b.rz * p);
+                    const k = 1 - p * 0.5;
+                    ctx.beginPath(); ctx.moveTo(0, -b.s * k); ctx.lineTo(b.s * 0.8 * k, b.s * 0.6 * k); ctx.lineTo(-b.s * 0.6 * k, b.s * 0.7 * k); ctx.closePath();
+                    ctx.fillStyle = 'rgba(235,245,255,.9)'; ctx.fill();
+                    ctx.restore();
+                });
+                if (t < 260) { ctx.setTransform(dpr, 0, 0, dpr, 0, 0); drawCracks(9999, 1 - t / 260); }
+                if (alive) requestAnimationFrame(step); else res();
+            };
+            requestAnimationFrame(step);
+        });
         finish();
     }
 
