@@ -1357,3 +1357,142 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
 .chip-level { font-size: 12px; font-weight: 700; color: var(--ink-3); }
 .desig-group .bearer-grid + .people-grid { margin-top: 16px; }
 .bearer-grid.faculty .bearer.big { grid-column: span 1; }
+.post-tag { align-self: flex-start; display: inline-flex; align-items: center; min-height: 22px; padding: 2px 8px; border-radius: 6px; border: 1.5px solid var(--ink); color: #fff; font-size: 12px; font-weight: 700; line-height: 1.25; }
+.page-committee .member-chip { align-items: center; min-height: 92px; }
+@media (max-width: 640px) { .post-tag { align-self: center; text-align: center; } }
+
+/* Committee page: hero feature + photo-first equal cards */
+.faculty-feature { width: 100%; }
+.faculty-card { background: var(--blue); }
+.faculty-card .member-role { color: var(--yellow); }
+.faculty-note { font-size: 15px; color: rgba(255, 255, 255, 0.85); }
+.level-dot { width: 12px; height: 12px; border-radius: 3px; border: 2px solid var(--ink); transform: rotate(45deg); display: inline-block; }
+.team-level h2 .hl { font-size: 0.6em; vertical-align: 0.35em; margin-left: 8px; }
+
+.headshot-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+.headshot {
+    background: var(--card); border: var(--border); border-radius: var(--r-lg);
+    overflow: hidden; box-shadow: var(--pop);
+    display: flex; flex-direction: column;
+    transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+}
+.headshot:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+.hs-photo {
+    position: relative; aspect-ratio: 1 / 1; border-bottom: var(--border);
+    background: var(--tint);
+    background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.12) 0 14px, transparent 14px 28px);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.hs-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hs-initials {
+    width: 96px; height: 96px; border-radius: 50%;
+    background: var(--yellow); border: 3px solid var(--ink); box-shadow: var(--pop-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-varsity); font-size: 34px; color: var(--ink);
+}
+.hs-body { padding: 14px 14px 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; flex: 1; }
+.hs-body h3 { font-family: var(--font-display); font-weight: 400; font-size: 24px; line-height: 1.02; text-transform: uppercase; }
+.hs-body .post-tag { align-self: flex-start; }
+.hs-phone { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--blue); margin-top: auto; }
+.hs-phone svg { width: 14px; height: 14px; }
+.hs-phone:hover { color: var(--red); }
+
+@media (max-width: 1180px) { .headshot-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 1023px) { .headshot-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px) {
+    .headshot-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .hs-initials { width: 72px; height: 72px; font-size: 26px; }
+    .hs-body { padding: 10px 10px 12px; }
+    .hs-body h3 { font-size: 20px; }
+    .hs-body .post-tag { font-size: 11px; }
+}
+
+/* Committee: heads grouped by post, clusters flow side by side */
+.post-clusters { --cols: 5; --gap: 20px; display: flex; flex-wrap: wrap; gap: 32px var(--gap); }
+.cluster {
+    --span: min(var(--n), var(--cols));
+    flex: 0 0 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols) * var(--span) + var(--gap) * (var(--span) - 1));
+    min-width: 0;
+}
+.cluster-label {
+    position: relative;
+    height: 34px; margin-bottom: 14px;
+    border-top: 4px solid var(--c);
+    border-left: 4px solid var(--c); border-right: 4px solid var(--c);
+    border-radius: 8px 8px 0 0;
+}
+.cluster-label span {
+    position: absolute; left: 12px; top: -15px;
+    background: var(--c); color: #fff;
+    border: 2px solid var(--ink); border-radius: 6px;
+    padding: 2px 10px 1px;
+    font-family: var(--font-display); font-size: 17px; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.02em;
+    white-space: nowrap; max-width: calc(100% - 24px); overflow: hidden; text-overflow: ellipsis;
+}
+.section-paper2 .cluster-label span { box-shadow: 2px 2px 0 var(--ink); }
+.cluster-cards { display: grid; grid-template-columns: repeat(var(--span), 1fr); gap: var(--gap); }
+.cluster-cards .hs-photo { background: var(--c); background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.12) 0 14px, transparent 14px 28px); }
+
+@media (max-width: 1180px) { .post-clusters { --cols: 4; } }
+@media (max-width: 1023px) { .post-clusters { --cols: 3; } }
+@media (max-width: 640px) {
+    .post-clusters { --cols: 2; --gap: 12px; gap: 28px 12px; }
+    .cluster { flex-basis: 100%; }
+    .cluster-cards { grid-template-columns: 1fr 1fr; }
+    .cluster-label span { font-size: 15px; }
+}
+
+/* --------------------------------------------------------------------------
+   More sports motion
+   -------------------------------------------------------------------------- */
+/* Hero title: letters bounce in like balls, the year stamps down */
+.bounce-in .ltr { display: inline-block; animation: ballDrop 700ms cubic-bezier(.3,1.5,.5,1) both; animation-delay: calc(var(--i) * 60ms + 100ms); }
+@keyframes ballDrop {
+    0% { transform: translateY(-120px) rotate(-12deg); opacity: 0; }
+    55% { transform: translateY(8px) rotate(3deg); opacity: 1; }
+    75% { transform: translateY(-10px); }
+    100% { transform: none; opacity: 1; }
+}
+.bounce-in .stamp { animation: stampIn 520ms cubic-bezier(.3,1.6,.5,1) both; animation-delay: calc(var(--i) * 60ms + 200ms); }
+@keyframes stampIn { 0% { transform: scale(2.2) rotate(-8deg); opacity: 0; } 60% { transform: scale(.94) rotate(1deg); opacity: 1; } 100% { transform: none; opacity: 1; } }
+
+/* Jerseys hang onto the board and swing */
+.hang-in .jersey svg { transform-origin: 50% 0; animation: hangSwing 900ms cubic-bezier(.3,1.3,.5,1) both; animation-delay: calc(var(--i) * 90ms + 300ms); }
+@keyframes hangSwing {
+    0% { transform: translateY(-50px) rotate(-25deg); opacity: 0; }
+    45% { transform: translateY(0) rotate(12deg); opacity: 1; }
+    70% { transform: rotate(-6deg); }
+    100% { transform: none; opacity: 1; }
+}
+
+/* Section headings slide up */
+.h-rise { clip-path: inset(0 0 0 0); }
+.fx .h-rise { opacity: 0; transform: translateY(28px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
+.fx .h-rise.in { opacity: 1; transform: none; }
+
+/* Referee cards flip in on the rulebook card */
+.ref-cards { position: absolute; top: 20px; right: 24px; width: 90px; height: 80px; pointer-events: none; }
+.ref { position: absolute; top: 0; width: 44px; height: 62px; border: 2.5px solid var(--ink); border-radius: 6px; box-shadow: 3px 3px 0 var(--ink); opacity: 0; }
+.ref.yellow { right: 34px; background: var(--yellow); transform: rotate(-60deg) translateY(-40px); }
+.ref.red { right: 0; background: #b51d31; border-color: var(--ink); transform: rotate(60deg) translateY(-40px); }
+.ref-cards.in .ref { opacity: 1; transition: transform 650ms cubic-bezier(.3,1.5,.5,1), opacity 200ms; }
+.ref-cards.in .ref.yellow { transform: rotate(-12deg); }
+.ref-cards.in .ref.red { transform: rotate(10deg); transition-delay: 180ms; }
+.rulebook-card h3 { padding-right: 90px; }
+
+/* Sport cards: zoom into the court on hover */
+.tourn-art img { transition: transform 400ms var(--ease); }
+.tourn-card:hover .tourn-art img { transform: scale(1.08) rotate(-1deg); }
+
+/* Standings bars fill when the table scrolls into view */
+.pts .bar span { transition: width 1000ms cubic-bezier(.2,.8,.3,1); }
+.fx .board.reveal:not(.shown) .pts .bar span { width: 0 !important; }
+
+/* Committee cards flip in like trading cards; initials bounce on hover */
+.fx .headshot.reveal { transform: perspective(800px) rotateY(-70deg); transform-origin: left center; }
+.fx .headshot.reveal.shown { transform: none; }
+.fx .headshot.reveal.shown:hover { transform: translate(-2px, -2px); }
+.headshot:hover .hs-initials { animation: ballBounce 700ms cubic-bezier(.3,1.4,.5,1); }
+@keyframes ballBounce { 0% { transform: none; } 30% { transform: translateY(-16px) scale(1.04, .96); } 55% { transform: translateY(0) scale(1.08, .9); } 75% { transform: translateY(-6px); } 100% { transform: none; } }
+
+@media (max-width: 640px) { .ref-cards { transform: scale(.75); transform-origin: top right; } .rulebook-card h3 { padding-right: 60px; } }

@@ -208,7 +208,7 @@
                 io.unobserve(el);
             });
         }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-        const SEL = '.card, .member, .win-card, .board, .leader-card, .trivia, .rulebook-card, .form-card, .tile';
+        const SEL = '.card, .member, .win-card, .board, .leader-card, .trivia, .rulebook-card, .form-card, .tile, .headshot';
         const scan = (root) => root.querySelectorAll(SEL).forEach(el => {
             if (!el.dataset.fx) { el.dataset.fx = '1'; el.classList.add('reveal'); io.observe(el); }
         });
@@ -217,7 +217,104 @@
             .observe(document.body, { childList: true, subtree: true });
     }
 
+    /* ---------------- Hero title: letters bounce in, year stamps down ---------------- */
+    function setupHeroTitle() {
+        if (reduce) return;
+        const h1 = document.querySelector('.hero h1, .win-hero h1, .team-hero h1');
+        if (!h1) return;
+        let i = 0;
+        [...h1.childNodes].forEach(node => {
+            if (node.nodeType === 3 && node.textContent.trim()) {
+                const frag = document.createDocumentFragment();
+                [...node.textContent].forEach(ch => {
+                    if (ch === ' ') { frag.appendChild(document.createTextNode(' ')); return; }
+                    const s = document.createElement('span');
+                    s.className = 'ltr';
+                    s.style.setProperty('--i', i++);
+                    s.textContent = ch;
+                    frag.appendChild(s);
+                });
+                node.replaceWith(frag);
+            } else if (node.nodeType === 1) {
+                node.classList.add('stamp');
+                node.style.setProperty('--i', i + 2);
+            }
+        });
+        h1.classList.add('bounce-in');
+    }
+
+    /* ---------------- Jerseys hang onto the board one by one ---------------- */
+    function setupJerseys() {
+        if (reduce) return;
+        const board = document.getElementById('deptJerseys');
+        if (!board) return;
+        [...board.children].forEach((j, i) => j.style.setProperty('--i', i));
+        board.classList.add('hang-in');
+    }
+
+    /* ---------------- Numbers count up when they come into view ---------------- */
+    function countUp(el) {
+        const raw = el.textContent.trim();
+        const m = raw.match(/^([\d,]+)(.*)$/);
+        if (!m) return;
+        const target = parseInt(m[1].replace(/,/g, ''), 10);
+        const suffix = m[2];
+        const useComma = m[1].includes(',');
+        const start = performance.now(), dur = 1100;
+        const step = (t) => {
+            const k = Math.min(1, (t - start) / dur);
+            const v = Math.round(target * (1 - Math.pow(1 - k, 3)));
+            el.textContent = (useComma ? v.toLocaleString('en-IN') : v) + suffix;
+            if (k < 1) requestAnimationFrame(step);
+        };
+        el.textContent = '0' + suffix;
+        requestAnimationFrame(step);
+    }
+    function setupCounters() {
+        if (reduce || !('IntersectionObserver' in window)) return;
+        const els = document.querySelectorAll('.scoreboard b, .win-stats b');
+        const io = new IntersectionObserver(entries => entries.forEach(en => {
+            if (en.isIntersecting) { countUp(en.target); io.unobserve(en.target); }
+        }), { threshold: 0.6 });
+        els.forEach(el => io.observe(el));
+    }
+
+    /* ---------------- Section headings slide up into view ---------------- */
+    function setupHeadings() {
+        if (reduce || !('IntersectionObserver' in window)) return;
+        const hs = document.querySelectorAll('.section h2');
+        const io = new IntersectionObserver(entries => entries.forEach(en => {
+            if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+        }), { threshold: 0.4 });
+        hs.forEach(h => {
+            if (h.closest('.reveal')) return;
+            h.classList.add('h-rise');
+            io.observe(h);
+        });
+    }
+
+    /* ---------------- Referee cards flip in on the rulebook card ---------------- */
+    function setupRefCards() {
+        const card = document.querySelector('.rulebook-card');
+        if (!card) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'ref-cards';
+        wrap.setAttribute('aria-hidden', 'true');
+        wrap.innerHTML = '<span class="ref yellow"></span><span class="ref red"></span>';
+        card.appendChild(wrap);
+        if (reduce || !('IntersectionObserver' in window)) { wrap.classList.add('in'); return; }
+        const io = new IntersectionObserver(entries => entries.forEach(en => {
+            if (en.isIntersecting) { wrap.classList.add('in'); io.disconnect(); }
+        }), { threshold: 0.5 });
+        io.observe(card);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+        setupHeroTitle();
+        setupJerseys();
+        setupCounters();
+        setupHeadings();
+        setupRefCards();
         setupHeroBalls();
         setupTape();
         setupBatSwing();
