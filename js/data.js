@@ -129,8 +129,7 @@ const AVAHAN_DEFAULT_DATA = {
         whatsapp: "https://chat.whatsapp.com/KCJFNR4DXec84xSB6KgYnB",
         youtube: "https://youtube.com/@vcetavahan4508",
         coordinators: [
-            { name: "Anurag Parulekar", phone: "+91 72193 03867", role: "General Sports Coordinator" },
-            { name: "Sairam Lahane", phone: "+91 93216 86959", role: "General Sports Coordinator" }
+            { name: "Milind Sonkar", phone: "+91 99230 16679", role: "Sports Secretary" }
         ],
         rulebookPdf: "assets/AVAHAN_2027_Rulebook.pdf"
     },
@@ -150,7 +149,7 @@ const AVAHAN_DEFAULT_DATA = {
             summary: "Vidyavardhini's College of Engineering and Technology (VCET) announces the flagship annual sports fest AVAHAN 2027 scheduled from 09th Jan to 11th Jan.",
             content: "AVAHAN 2027 is back with 15 intense sports disciplines across 3 days of high-octane sporting action. Inter-department bragging rights are up for grabs across all 8 branches: EXTC, VLSI, CIVIL, MECHANICAL, IT, AIDS, CSE-DS, and COMPS. Register your team before slots close.",
             image: SPORTS_ART.torch,
-            author: "Anurag Parulekar & Sairam Lahane",
+            author: "Milind Sonkar",
             likes: 248
         },
         {

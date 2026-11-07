@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Committee · AVAHAN 2027</title>
+    <meta name="description" content="Meet the VCET Sports Committee behind AVAHAN 2027: the Sports Secretary and the event heads for every sport.">
+    <link rel="icon" type="image/png" href="assets/vcet_logo_white.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&family=Graduate&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="page-committee">
+
+    <!-- Notice bar -->
+    <div class="notice">
+        <div class="wrap">
+            <span class="notice-label">Notice</span>
+            <div class="ticker-wrapper">
+                <div id="tickerTrack" class="ticker-content">
+                    <span class="tick">Loading notices</span>
+                </div>
+            </div>
+            <a class="notice-link" href="https://chat.whatsapp.com/KCJFNR4DXec84xSB6KgYnB" target="_blank" rel="noopener">
+                <i data-lucide="message-circle"></i>
+                <span>Join the WhatsApp community</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="wrap">
+            <a href="index.html" class="brand" aria-label="AVAHAN 2027 home">
+                <img src="assets/vcet_logo_black.png" alt="VCET crest">
+                <div>
+                    <span class="brand-name">AVAHAN <em>2027</em></span>
+                    <span class="brand-sub">VCET Sports Committee</span>
+                </div>
+            </a>
+
+            <div class="nav-links">
+                <a href="index.html#standings">Standings</a>
+                <a href="winners.html">Winners</a>
+                <a href="index.html#news">Bulletins</a>
+                <a href="index.html#registrations">Sports</a>
+                <a href="index.html#rulebook">Rulebook</a>
+                <a href="index.html#trivia">Trivia</a>
+                <a href="index.html#glimpses">Past editions</a>
+                <a href="committee.html" class="current" aria-current="page">Committee</a>
+            </div>
+
+            <div class="nav-actions">
+                <a href="index.html#committee-login" class="nav-login" title="Committee login">
+                    <i data-lucide="lock"></i>
+                    <span>Admin</span>
+                </a>
+                <a href="index.html#registrations" class="btn btn-primary btn-sm">Register a squad</a>
+                <button id="mobileMenuBtn" class="icon-btn menu-btn" aria-label="Open menu">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobileMenu" class="mobile-menu hidden">
+            <a href="index.html#standings" class="mobile-link">Standings</a>
+            <a href="winners.html" class="mobile-link">VCET winners</a>
+            <a href="index.html#news" class="mobile-link">Bulletins</a>
+            <a href="index.html#registrations" class="mobile-link">Sports and registration</a>
+            <a href="index.html#rulebook" class="mobile-link">Rulebook</a>
+            <a href="index.html#trivia" class="mobile-link">Trivia</a>
+            <a href="index.html#glimpses" class="mobile-link">Past editions</a>
+            <a href="committee.html" class="mobile-link">Committee</a>
+            <div class="mobile-actions">
+                <a href="index.html#committee-login" class="btn btn-secondary">Committee login</a>
+                <a href="index.html#registrations" class="btn btn-primary mobile-link-btn">Register a squad</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Committee hero -->
+    <header class="team-hero">
+        <div class="wrap">
+            <div>
+                <span class="hero-kicker">AVAHAN 2027 · <span id="teamCount">Sports Committee</span></span>
+                <h1>The team <span class="hl">behind the game</span></h1>
+                <p class="hero-lede">The students who plan the fixtures, run the grounds and settle the calls. Got a question about a sport? Call its event head directly.</p>
+            </div>
+            <div id="teamLeads" class="team-leads"></div>
+        </div>
+    </header>
+
+    <section class="section">
+        <div class="wrap">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow"><i data-lucide="flag"></i>Event heads</p>
+                    <h2>Who runs <span class="hl">each sport</span></h2>
+                    <p class="section-sub">Every sport has its own event heads. They run the matches and answer questions about squads, timings and rules. Tap a number to call.</p>
+                </div>
+            </div>
+            <div class="toolbar">
+                <label class="search">
+                    <i data-lucide="search"></i>
+                    <input type="text" id="teamSearch" placeholder="Search a sport or name" class="input">
+                </label>
+            </div>
+            <div id="teamGrid" class="sport-blocks"></div>
+        </div>
+    </section>
+
+    <section class="section section-yellow">
+        <div class="wrap win-cta">
+            <div>
+                <p class="eyebrow"><i data-lucide="message-circle"></i>Questions</p>
+                <h2>Not sure who to ask?</h2>
+                <p class="section-sub">Send a message to the whole committee, or ask in the AVAHAN WhatsApp community.</p>
+            </div>
+            <div class="head-actions">
+                <a href="index.html#contact" class="btn btn-primary btn-lg">Message the committee</a>
+                <a href="https://chat.whatsapp.com/KCJFNR4DXec84xSB6KgYnB" target="_blank" rel="noopener" class="btn btn-secondary btn-lg"><i data-lucide="message-circle"></i>WhatsApp community</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="wrap">
+            <div class="brand">
+                <img src="assets/vcet_logo_white.png" alt="VCET crest">
+                <div>
+                    <span class="brand-name">AVAHAN 2027</span>
+                    <span class="brand-sub">Vidyavardhini's College of Engineering and Technology</span>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="https://chat.whatsapp.com/KCJFNR4DXec84xSB6KgYnB" target="_blank" rel="noopener"><i data-lucide="message-circle"></i>WhatsApp</a>
+                <a href="https://www.instagram.com/avahan_vcet?exln=Ync0bjRrNHZ3Mm41" target="_blank" rel="noopener"><i data-lucide="instagram"></i>@avahan_vcet</a>
+                <a href="index.html"><i data-lucide="house"></i>AVAHAN 2027</a>
+                <a href="winners.html"><i data-lucide="trophy"></i>VCET winners</a>
+                <a href="assets/AVAHAN_2027_Rulebook.pdf" download><i data-lucide="file-text"></i>Rulebook</a>
+                <a href="index.html#committee-login"><i data-lucide="lock"></i>Committee login</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/committee.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/fx.js"></script>
+    <script src="js/committee-page.js"></script>
+</body>
+</html>

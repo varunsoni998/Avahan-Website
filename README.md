@@ -76,9 +76,8 @@ You can run the website immediately without any software dependencies:
 
 ---
 
-## General Sports Coordinators
-- **Anurag Parulekar:** +91 72193 03867
-- **Sairam Lahane:** +91 93216 86959
+## Sports Secretary
+- **Milind Sonkar:** +91 99230 16679
 
 ---
 
