@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVAHAN 2027 · VCET Sports Committee</title>
+    <meta name="description" content="AVAHAN 2027, the inter-department sports fest of VCET Vasai, 9–11 January 2027. Register your department's squad, check the standings and read the rules.">
+    <link rel="icon" type="image/png" href="assets/vcet_logo_white.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&family=Graduate&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <!-- Notice bar -->
+    <div class="notice">
+        <div class="wrap">
+            <span class="notice-label">Notice</span>
+            <div class="ticker-wrapper">
+                <div id="tickerTrack" class="ticker-content">
+                    <span class="tick">Loading notices</span>
+                </div>
+            </div>
+            <a class="notice-link" href="https://chat.whatsapp.com/KCJFNR4DXec84xSB6KgYnB" target="_blank" rel="noopener">
+                <i data-lucide="message-circle"></i>
+                <span>Join the WhatsApp community</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="wrap">
+            <a href="#home" class="brand" aria-label="AVAHAN 2027 home">
+                <img src="assets/vcet_logo_black.png" alt="VCET crest">
+                <div>
+                    <span class="brand-name">AVAHAN <em>2027</em></span>
+                    <span class="brand-sub">VCET Sports Committee</span>
+                </div>
+            </a>
+
+            <div class="nav-links">
+                <a href="#standings">Standings</a>
+                <a href="winners.html">Winners</a>
+                <a href="#news">Bulletins</a>
+                <a href="#registrations">Sports</a>
+                <a href="#rulebook">Rulebook</a>
+                <a href="#trivia">Trivia</a>
+                <a href="#glimpses">Past editions</a>
+                <a href="#contact">Committee</a>
+            </div>
+
+            <div class="nav-actions">
+                <button id="openAdminBtn" class="nav-login" title="Committee login">
+                    <i data-lucide="lock"></i>
+                    <span>Committee</span>
+                </button>
+                <a href="#registrations" class="btn btn-primary btn-sm">Register a squad</a>
+                <button id="mobileMenuBtn" class="icon-btn menu-btn" aria-label="Open menu">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobileMenu" class="mobile-menu hidden">
+            <a href="#standings" class="mobile-link">Standings</a>
+            <a href="winners.html" class="mobile-link">VCET winners</a>
+            <a href="#news" class="mobile-link">Bulletins</a>
+            <a href="#registrations" class="mobile-link">Sports and registration</a>
+            <a href="#rulebook" class="mobile-link">Rulebook</a>
+            <a href="#trivia" class="mobile-link">Trivia</a>
+            <a href="#glimpses" class="mobile-link">Past editions</a>
+            <a href="#contact" class="mobile-link">Committee</a>
+            <div class="mobile-actions">
+                <button id="openAdminMobileBtn" class="btn btn-secondary">Committee login</button>
+                <a href="#registrations" class="btn btn-primary mobile-link-btn">Register a squad</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero: eight departments, one fest -->
+    <header id="home" class="hero">
+        <div class="wrap">
+            <div class="enter">
+                <span class="hero-kicker">VCET Sports Committee presents</span>
+                <h1>Avahan <span class="year">2027</span></h1>
+                <span class="hero-tag">#MORE THAN A GAME</span>
+                <p class="hero-lede">
+                    <strong>8 departments. 15 sports. 3 days</strong> to settle who runs the ground. Captains, register your department's squad and get your entry slip.
+                </p>
+                <div class="hero-actions">
+                    <a href="#registrations" class="btn btn-primary btn-lg">
+                        Register your department
+                        <i data-lucide="arrow-right"></i>
+                    </a>
+                    <a href="assets/AVAHAN_2027_Rulebook.pdf" download="AVAHAN_2027_Rulebook.pdf" class="btn btn-secondary btn-lg">
+                        <i data-lucide="file-down"></i>
+                        Rulebook PDF
+                    </a>
+                </div>
+                <div class="hero-when">
+                    <span><i data-lucide="calendar"></i>9–11 January 2027</span>
+                    <span><i data-lucide="map-pin"></i>VCET campus, Vasai</span>
+                </div>
+            </div>
+
+            <div class="rivalry enter enter-2">
+                <div class="rivalry-head">
+                    <b>Pick your side</b>
+                    <span>The 8 departments</span>
+                </div>
+                <div id="deptJerseys" class="jerseys"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Scoreboard strip -->
+    <div class="scoreboard">
+        <div class="wrap">
+            <div><b>15</b><span>Sports</span></div>
+            <div><b>8</b><span>Departments</span></div>
+            <div><b>3</b><span>Days of matches</span></div>
+            <div><b>1,400+</b><span>Student athletes</span></div>
+        </div>
+    </div>
+
+    <!-- Sports tape -->
+    <div class="tape" aria-hidden="true">
+        <div id="sportsTape" class="tape-track"></div>
+    </div>
+
+    <!-- Standings / leaderboard -->
+    <section id="standings" class="section">
+        <div class="wrap">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow"><i data-lucide="trophy"></i>Department standings</p>
+                    <h2>Who rules <span class="hl">VCET</span></h2>
+                    <p class="section-sub">Points each department has earned, edition by edition, plus the all-time table. Updated by the committee as results come in.</p>
+                </div>
+                <div class="segmented" id="boardYearFilters"></div>
+            </div>
+
+            <div class="board-wrap">
+                <div id="leaderboard" class="board"></div>
+                <aside id="boardSide" class="board-side"></aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bulletins -->
+    <section id="news" class="section section-paper2">
+        <div class="wrap">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow"><i data-lucide="megaphone"></i>From the committee desk</p>
+                    <h2>Bulletins</h2>
+                    <p class="section-sub">Fixtures, trial notices and results, straight from the sports committee.</p>
+                </div>
+                <div class="head-actions">
+                    <button onclick="openNewsAdminModal()" class="btn btn-ghost btn-sm">
+                        <i data-lucide="plus"></i>
+                        Post bulletin
+                    </button>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <div class="segmented" id="newsCategoryFilters">
+                    <button class="filter-pill active" data-category="ALL">All</button>
+                    <button class="filter-pill" data-category="Mega Event">Fest</button>
+                    <button class="filter-pill" data-category="Tournament Alert">Tournaments</button>
+                    <button class="filter-pill" data-category="College Victory">Results</button>
+                </div>
+                <label class="search">
+                    <i data-lucide="search"></i>
+                    <input type="text" id="newsSearchInput" placeholder="Search bulletins" class="input">
+                </label>
+            </div>
+
+            <div id="newsGrid" class="news-grid"></div>
+        </div>
+    </section>
+
+    <!-- Sports & registration -->
+    <section id="registrations" class="section section-blue">
+        <div class="wrap">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow"><i data-lucide="clipboard-list"></i>Registration</p>
+                    <h2>Pick a sport. <span class="hl">Bring your squad.</span></h2>
+                    <p class="section-sub">Open to EXTC, VLSI, Civil, Mechanical, IT, AIDS, CSE-DS and Comps. Register and you get an ID and an entry slip for the toss desk.</p>
+                </div>
+                <div class="head-actions">
+                    <span class="deadline"><i data-lucide="clock"></i>Entries close <span class="num">28 Dec</span></span>
+                    <button onclick="openCheckRegistrationModal()" class="btn btn-secondary btn-sm">
+                        <i data-lucide="search"></i>
+                        Find my slip
+                    </button>
+                </div>
+            </div>
+
+            <div id="tournamentsGrid" class="tourn-grid"></div>
+        </div>
+    </section>
+
+    <!-- Rulebook -->
+    <section id="rulebook" class="section">
+        <div class="wrap rule-band">
+            <div>
+                <p class="eyebrow"><i data-lucide="shield-check"></i>Fair play code</p>
+                <h2>Four rules. <span class="hl">Every match.</span></h2>
+                <ol class="rule-list">
+                    <li><span class="n">1</span><span>Teams <b>report 30 minutes</b> before their scheduled match.</span></li>
+                    <li><span class="n">2</span><span>A player can play for <b>one team per sport</b>.</span></li>
+                    <li><span class="n">3</span><span><b>College ID</b> is a must, or this year's fee receipt with a photo ID.</span></li>
+                    <li><span class="n">4</span><span>Any violence or abuse <b>disqualifies the whole squad</b>.</span></li>
+                </ol>
+            </div>
+            <div class="rulebook-card">
+                <span class="kick">AVAHAN 2027 rulebook</span>
+                <h3>Formats, squad sizes and event heads</h3>
+                <p>Every sport's format, overs, timings, mat and court rules, and the phone numbers of each event head. PDF, 4.8 MB.</p>
+                <div class="actions">
+                    <a href="assets/AVAHAN_2027_Rulebook.pdf" download="AVAHAN_2027_Rulebook.pdf" class="btn btn-yellow">
+                        <i data-lucide="download"></i>
+                        Download PDF
+                    </a>
+                    <button onclick="openRulebookModal()" class="btn btn-ghost">Read common rules</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trivia -->
+    <section id="trivia" class="section section-yellow">
+        <div class="wrap trivia-wrap">
+            <div>
+                <p class="eyebrow"><i data-lucide="circle-help"></i>Between matches</p>
+                <h2>Sports trivia</h2>
+                <p class="section-sub">Cricket, football, kabaddi, the Olympics and more. 10 points for every right answer. How long can your streak go?</p>
+            </div>
+
+            <div class="trivia">
+                <div class="trivia-top">
+                    <div>
+                        <span id="triviaSportBadge" class="sport">Cricket</span>
+                        <span id="triviaCounter" class="num">Question 1 of 8</span>
+                    </div>
+                    <div class="tally">
+                        <span>Streak <b id="streakCount">0</b></span>
+                        <span>Score <b id="scoreCount">0</b></span>
+                    </div>
+                </div>
+
+                <h3 id="triviaQuestionText" class="trivia-q">Loading question</h3>
+
+                <div id="triviaOptionsGrid" class="options"></div>
+
+                <div id="triviaExplanationBox" class="explain hidden">
+                    <div id="triviaResultTitle" class="result"></div>
+                    <p id="triviaExplanationText"></p>
+                </div>
+
+                <div class="trivia-bottom">
+                    <button id="triviaResetBtn" class="btn btn-ghost btn-sm">
+                        <i data-lucide="rotate-ccw"></i>
+                        Restart
+                    </button>
+                    <button id="triviaNextBtn" class="btn btn-ink">
+                        Next question
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Past editions -->
+    <section id="glimpses" class="section section-night">
+        <div class="wrap">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow"><i data-lucide="film"></i>Past editions</p>
+                    <h2>AVAHAN <span class="hl">through the years</span></h2>
+                    <p class="section-sub">Aftermovies and match moments from earlier editions.</p>
+                </div>
+                <div class="head-actions">
+                    <button onclick="openGalleryAdminModal()" class="btn btn-ghost btn-sm">
+                        <i data-lucide="image-plus"></i>
+                        Add media
+                    </button>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <div class="segmented" id="galleryYearFilters">
+                    <button class="gallery-pill active" data-year="ALL">All years</button>
+                    <button class="gallery-pill" data-year="2026">2026</button>
+                    <button class="gallery-pill" data-year="2025">2025</button>
+                    <button class="gallery-pill" data-year="2024">2024</button>
+                    <button class="gallery-pill" data-year="2023">2023</button>
+                    <button class="gallery-pill" data-year="2022">2022</button>
+                </div>
+                <div class="segmented" id="galleryTypeFilters">
+                    <button class="type-pill active" data-type="ALL">All</button>
+                    <button class="type-pill" data-type="video">Videos</button>
+                    <button class="type-pill" data-type="image">Photos</button>
+                </div>
+            </div>
+
+            <div id="galleryGrid" class="gallery-grid"></div>
+        </div>
+    </section>
+
+    <!-- Committee -->
+    <section id="contact" class="section">
+        <div class="wrap contact-grid">
+            <div>
+                <p class="eyebrow"><i data-lucide="users"></i>Committee</p>
+                <h2>Talk to the <span class="hl">sports committee</span></h2>
+                <p class="section-sub">Questions about trials, fixtures, court slots or an objection after a match.</p>
+
+                <ul class="contact-list">
+                    <li>
+                        <i data-lucide="phone" class="ic"></i>
+                        <div>
+                            <b>General coordinators</b>
+                            <div class="person"><span>Anurag Parulekar</span><a class="mono" href="tel:+917219303867">+91 72193 03867</a></div>
+                            <div class="person"><span>Sairam Lahane</span><a class="mono" href="tel:+919321686959">+91 93216 86959</a></div>
+                        </div>
+                    </li>
+                    <li>
+                        <i data-lucide="message-circle" class="ic"></i>
+                        <div>
+                            <b>WhatsApp community</b>
+                            <a href="https://chat.whatsapp.com/KCJFNR4DXec84xSB6KgYnB" target="_blank" rel="noopener">Join for fixture alerts and slot updates</a>
+                        </div>
+                    </li>
+                    <li>
+                        <i data-lucide="instagram" class="ic"></i>
+                        <div>
+                            <b>Instagram</b>
+                            <a href="https://www.instagram.com/avahan_vcet?exln=Ync0bjRrNHZ3Mm41" target="_blank" rel="noopener">@avahan_vcet</a>
+                        </div>
+                    </li>
+                    <li>
+                        <i data-lucide="map-pin" class="ic"></i>
+                        <div>
+                            <b>VCET campus</b>
+                            <span class="dim">K.T. Marg, Vasai (W) 401201</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="form-card">
+                <h3>Send us a message</h3>
+                <p>We reply on WhatsApp, usually within a day.</p>
+
+                <form id="contactForm" class="form">
+                    <div class="form-row">
+                        <div class="field">
+                            <label>Full name</label>
+                            <input type="text" required placeholder="Sahil Verma" class="input">
+                        </div>
+                        <div class="field">
+                            <label>Department</label>
+                            <select required class="input">
+                                <option value="">Select</option>
+                                <option>EXTC</option>
+                                <option>VLSI</option>
+                                <option>CIVIL</option>
+                                <option>MECHANICAL</option>
+                                <option>IT</option>
+                                <option>AIDS</option>
+                                <option>CSE-DS</option>
+                                <option>COMPS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="field">
+                            <label>Roll number</label>
+                            <input type="text" required placeholder="23AIDS102" class="input mono">
+                        </div>
+                        <div class="field">
+                            <label>WhatsApp number</label>
+                            <input type="tel" required placeholder="10 digits" class="input">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Message</label>
+                        <textarea rows="4" required placeholder="Your question about trials, fixtures or slots" class="input"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">Send message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="wrap">
+            <div class="brand">
+                <img src="assets/vcet_logo_white.png" alt="VCET crest">
+                <div>
+                    <span class="brand-name">AVAHAN 2027</span>
+                    <span class="brand-sub">Vidyavardhini's College of Engineering and Technology</span>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="https://chat.whatsapp.com/KCJFNR4DXec84xSB6KgYnB" target="_blank" rel="noopener"><i data-lucide="message-circle"></i>WhatsApp</a>
+                <a href="https://www.instagram.com/avahan_vcet?exln=Ync0bjRrNHZ3Mm41" target="_blank" rel="noopener"><i data-lucide="instagram"></i>@avahan_vcet</a>
+                <a href="winners.html"><i data-lucide="trophy"></i>VCET winners</a>
+                <a href="assets/AVAHAN_2027_Rulebook.pdf" download><i data-lucide="file-text"></i>Rulebook</a>
+                <button onclick="openAdminModal()"><i data-lucide="lock"></i>Committee login</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================== MODALS ============================== -->
+
+    <!-- Registration form -->
+    <div id="registrationModal" class="modal hidden">
+        <div class="modal-panel">
+            <button onclick="closeRegistrationModal()" class="icon-btn modal-close" aria-label="Close"><i data-lucide="x"></i></button>
+
+            <span id="regModalSportTag" class="kicker">Squad registration</span>
+            <h3 id="regModalTitle" class="title">Register your squad</h3>
+            <p id="regModalSubtitle" class="lede">Every player needs a valid VCET college ID on match day.</p>
+
+            <form id="teamRegistrationForm" class="form">
+                <input type="hidden" id="regTournamentId">
+
+                <div class="field">
+                    <label>Sport</label>
+                    <select id="regTournamentSelect" required class="input"></select>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label>Team name</label>
+                        <input type="text" id="regTeamName" required placeholder="COMPS Strikers" class="input">
+                    </div>
+                    <div class="field">
+                        <label>Department</label>
+                        <select id="regDepartment" required class="input">
+                            <option value="">Select</option>
+                            <option value="EXTC">EXTC · Electronics and Telecom</option>
+                            <option value="VLSI">VLSI Design</option>
+                            <option value="CIVIL">Civil Engineering</option>
+                            <option value="MECHANICAL">Mechanical Engineering</option>
+                            <option value="IT">IT · Information Technology</option>
+                            <option value="AIDS">AIDS · AI and Data Science</option>
+                            <option value="CSE-DS">CSE-DS · Computer Science, Data Science</option>
+                            <option value="COMPS">COMPS · Computer Engineering</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label>Year</label>
+                        <select id="regYear" required class="input">
+                            <option>1st Year (FE)</option>
+                            <option>2nd Year (SE)</option>
+                            <option>3rd Year (TE)</option>
+                            <option>4th Year (BE)</option>
+                            <option>Mixed Departmental Squad</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Captain's name</label>
+                        <input type="text" id="regCaptainName" required placeholder="Full name" class="input">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label>Captain's VCET email</label>
+                        <input type="email" id="regCaptainEmail" required placeholder="name.branch@vcet.edu.in" class="input">
+                    </div>
+                    <div class="field">
+                        <label>Captain's WhatsApp</label>
+                        <input type="tel" id="regCaptainPhone" required placeholder="10 digits" class="input">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label style="display:flex;justify-content:space-between">
+                        <span>Players, separated by commas</span>
+                        <span id="regSquadLimitHint" class="hint">Squad size</span>
+                    </label>
+                    <textarea id="regPlayerNames" rows="3" required placeholder="Aditya Raut (C), Sahil K, Devendra P" class="input"></textarea>
+                </div>
+
+                <label class="check" for="regRulesAgree">
+                    <input type="checkbox" id="regRulesAgree" required>
+                    <span>Every player listed is an enrolled VCET student of our department and will follow the AVAHAN fair play code.</span>
+                </label>
+
+                <div class="modal-actions">
+                    <button type="button" onclick="closeRegistrationModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary grow">Submit and get entry slip</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Entry slip -->
+    <div id="slipModal" class="modal center hidden">
+        <div class="modal-panel md">
+            <button onclick="closeSlipModal()" class="icon-btn modal-close" aria-label="Close"><i data-lucide="x"></i></button>
+            <span class="kicker">You're in</span>
+            <h3 class="title" style="margin-bottom:20px">Your entry slip</h3>
+
+            <div id="printableSlip" class="slip">
+                <div class="slip-head">
+                    <img src="assets/vcet_logo_black.png" alt="VCET">
+                    <div>
+                        <b>AVAHAN 2027</b>
+                        <span>Match entry slip</span>
+                    </div>
+                </div>
+                <div class="slip-id"><span>Reg ID</span><span id="slipRegId">AVH-2027-CRIC-001</span></div>
+                <div class="slip-rows">
+                    <div class="ticket-row"><span>Event</span><b id="slipTournament">Box Cricket Championship 2027</b></div>
+                    <div class="ticket-row"><span>Team</span><b id="slipTeamName">COMPS Strikers</b></div>
+                    <div class="ticket-row"><span>Department</span><b id="slipDepartment">COMPS</b></div>
+                    <div class="ticket-row"><span>Captain</span><b id="slipCaptain">Aditya</b></div>
+                    <div class="ticket-row"><span>Players</span><b id="slipPlayerCount" class="num">10</b></div>
+                    <div class="ticket-row"><span>Registered</span><b id="slipTimestamp" class="num">2026-11-05 13:30</b></div>
+                </div>
+                <div class="slip-foot">
+                    <div class="barcode"></div>
+                    <p>Show this slip with every player's college ID at the toss desk.</p>
+                </div>
+            </div>
+
+            <div class="modal-actions" style="margin-top:20px">
+                <button onclick="printSlip()" class="btn btn-secondary grow"><i data-lucide="printer"></i>Print slip</button>
+                <button onclick="closeSlipModal()" class="btn btn-primary grow">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Find a slip -->
+    <div id="checkRegModal" class="modal center hidden">
+        <div class="modal-panel sm">
+            <button onclick="closeCheckRegistrationModal()" class="icon-btn modal-close" aria-label="Close"><i data-lucide="x"></i></button>
+            <h3 class="title">Find my slip</h3>
+            <p class="lede">Enter your registration ID, team name or captain's name.</p>
+            <div class="form">
+                <input type="text" id="checkRegInput" placeholder="AVH-2027-CRIC-101" class="input mono">
+                <button onclick="findRegistration()" class="btn btn-primary btn-block">Search</button>
+            </div>
+            <div id="checkRegResult" class="result-box hidden"></div>
+        </div>
+    </div>
+
+    <!-- Article -->
+    <div id="articleModal" class="modal hidden">
+        <div class="modal-panel">
+            <button onclick="closeArticleModal()" class="icon-btn modal-close" aria-label="Close"><i data-lucide="x"></i></button>
+            <div id="articleModalContent" class="article"></div>
+        </div>
+    </div>
+
+    <!-- Media viewer -->
+    <div id="mediaModal" class="modal media-modal hidden">
+        <button onclick="closeMediaModal()" class="icon-btn media-close" aria-label="Close"><i data-lucide="x"></i></button>
+        <div class="media-frame">
+            <div id="mediaContainer"></div>
+            <div id="mediaInfo" class="media-info"></div>
+        </div>
+    </div>
+
+    <!-- Common rules -->
+    <div id="rulebookModal" class="modal hidden">
+        <div class="modal-panel lg">
+            <button onclick="closeRulebookModal()" class="icon-btn modal-close" aria-label="Close"><i data-lucide="x"></i></button>
+            <span class="kicker">AVAHAN 2027 rulebook</span>
+            <h3 class="title">Common rules</h3>
+            <p class="lede">These apply to every sport. Sport-specific rules are in the full PDF.</p>
+
+            <ol class="rules">
+                <li><span class="n">01</span><div><b>Reporting time</b><p>Teams report 30 minutes before the scheduled match time.</p></div></li>
+                <li><span class="n">02</span><div><b>One team per sport</b><p>A player can only play for a single team in each sport.</p></div></li>
+                <li><span class="n">03</span><div><b>ID proof</b><p>Every player's college ID is checked at the match. Without a valid ID, bring this year's fee receipt and a photo ID.</p></div></li>
+                <li><span class="n">04</span><div><b>Zero violence</b><p>Any violence, or verbal or physical abuse of referees, event heads or other teams, disqualifies the whole squad.</p></div></li>
+                <li><span class="n">05</span><div><b>Undertaking and shoes</b><p>An undertaking letter and proper sports shoes are compulsory for all participants.</p></div></li>
+                <li><span class="n">06</span><div><b>Final decision</b><p>The event head's and referee's decision is final in every match.</p></div></li>
+            </ol>
+
+            <div class="modal-actions" style="margin-top:24px">
+                <a href="assets/AVAHAN_2027_Rulebook.pdf" download class="btn btn-primary grow"><i data-lucide="download"></i>Download the full rulebook · 4.8 MB</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Committee admin -->
+    <div id="adminModal" class="modal hidden">
+        <div class="modal-panel xl">
+            <button onclick="closeAdminModal()" class="icon-btn modal-close" aria-label="Close" title="Close"><i data-lucide="x"></i></button>
+
+            <div id="adminAuthScreen" class="auth">
+                <div class="lock"><i data-lucide="lock"></i></div>
+                <h3>Committee login</h3>
+                <p>Post bulletins, update standings, open sport forms, export squad lists and manage media.</p>
+                <div class="form">
+                    <input type="password" id="adminPinInput" placeholder="Passcode" class="input">
+                    <button onclick="verifyAdminAuth()" class="btn btn-primary btn-block">Unlock</button>
+                </div>
+                <p class="hint">Default passcode <code>avahan@2027</code></p>
+            </div>
+
+            <div id="adminDashboardPanel" class="hidden">
+                <div class="admin-head">
+                    <div>
+                        <span class="session">Signed in</span>
+                        <h3>AVAHAN admin</h3>
+                    </div>
+                    <button onclick="adminLogout()" class="btn btn-secondary btn-sm" title="Lock and sign out">
+                        <i data-lucide="log-out"></i>
+                        Sign out
+                    </button>
+                </div>
+
+                <div class="tabs" id="adminTabsNav">
+                    <button onclick="switchAdminTab('news')" class="admin-tab active" data-tab="news">Bulletins <span class="count" id="adminNewsCount">0</span></button>
+                    <button onclick="switchAdminTab('standings')" class="admin-tab" data-tab="standings">Standings</button>
+                    <button onclick="switchAdminTab('winners')" class="admin-tab" data-tab="winners">Winners</button>
+                    <button onclick="switchAdminTab('registrations')" class="admin-tab" data-tab="registrations">Registrations <span class="count" id="adminRegCount">0</span></button>
+                    <button onclick="switchAdminTab('tournaments')" class="admin-tab" data-tab="tournaments">Sport forms <span class="count" id="adminTournCount">0</span></button>
+                    <button onclick="switchAdminTab('gallery')" class="admin-tab" data-tab="gallery">Media <span class="count" id="adminGalCount">0</span></button>
+                    <button onclick="switchAdminTab('trivia')" class="admin-tab" data-tab="trivia">Trivia <span class="count" id="adminTrivCount">0</span></button>
+                    <button onclick="switchAdminTab('export')" class="admin-tab" data-tab="export">Backup</button>
+                </div>
+
+                <!-- Bulletins -->
+                <div id="adminTab-news" class="admin-tab-content stack">
+                    <div class="panel">
+                        <h4><i data-lucide="plus"></i>New bulletin</h4>
+                        <form id="adminNewsForm" class="form">
+                            <div class="form-row-3">
+                                <div class="field span-2">
+                                    <label>Headline</label>
+                                    <input type="text" id="admNewsTitle" required placeholder="COMPS win the pre-season table tennis cup" class="input">
+                                </div>
+                                <div class="field">
+                                    <label>Category</label>
+                                    <select id="admNewsCategory" class="input">
+                                        <option value="Mega Event">Fest</option>
+                                        <option value="Tournament Alert">Tournament</option>
+                                        <option value="College Victory">Result</option>
+                                        <option value="Trial Notice">Trial notice</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row-3">
+                                <div class="field">
+                                    <label>Tag</label>
+                                    <input type="text" id="admNewsBadge" placeholder="Champions" class="input">
+                                </div>
+                                <div class="field">
+                                    <label>Image URL or upload</label>
+                                    <div class="with-upload">
+                                        <input type="text" id="admNewsImage" placeholder="https://" class="input">
+                                        <label class="upload-btn" title="Upload image">
+                                            <i data-lucide="upload"></i>
+                                            <input type="file" id="admNewsFileInput" accept="image/*" class="hidden">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label>Author</label>
+                                    <input type="text" id="admNewsAuthor" placeholder="Anurag and Sairam" class="input">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Summary</label>
+                                <input type="text" id="admNewsSummary" required placeholder="One line" class="input">
+                            </div>
+                            <div class="field">
+                                <label>Full story</label>
+                                <textarea id="admNewsContent" rows="3" required placeholder="Match report, scores, details" class="input"></textarea>
+                            </div>
+                            <div><button type="submit" class="btn btn-primary">Publish bulletin</button></div>
+                        </form>
+                    </div>
+                    <div>
+                        <p class="list-title">Published</p>
+                        <div id="adminNewsList" class="rows"></div>
+                    </div>
+                </div>
+
+                <!-- Standings -->
+                <div id="adminTab-standings" class="admin-tab-content hidden stack">
+                    <div class="panel">
+                        <h4><i data-lucide="trophy"></i>Department points</h4>
+                        <div class="bar">
+                            <label class="filter">
+                                Edition
+                                <select id="admBoardYear" class="input" onchange="renderAdminStandings()"></select>
+                            </label>
+                            <span class="muted" style="font-size:14px;font-weight:600">Leave an edition at 0 for every department to hide it from the public table</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="data">
+                                <thead>
+                                    <tr><th>Department</th><th>Points</th><th>Gold</th><th>Silver</th><th>Bronze</th></tr>
+                                </thead>
+                                <tbody id="admBoardBody"></tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">
+                            <button onclick="saveAdminStandings()" class="btn btn-primary">Save standings</button>
+                            <button onclick="addBoardEdition()" class="btn btn-secondary"><i data-lucide="plus"></i>Add an edition</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Winners -->
+                <div id="adminTab-winners" class="admin-tab-content hidden stack">
+                    <div class="panel">
+                        <h4><i data-lucide="medal"></i>Add a winner</h4>
+                        <form id="adminWinnerForm" class="form">
+                            <div class="form-row-3">
+                                <div class="field span-2">
+                                    <label>Student or team name</label>
+                                    <input type="text" id="admWinName" required placeholder="Aditya Raut, or COMPS Kabaddi team" class="input">
+                                </div>
+                                <div class="field">
+                                    <label>Department</label>
+                                    <select id="admWinDept" required class="input">
+                                        <option value="">Select</option>
+                                        <option>EXTC</option><option>VLSI</option><option>CIVIL</option><option>MECHANICAL</option>
+                                        <option>IT</option><option>AIDS</option><option>CSE-DS</option><option>COMPS</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row-3">
+                                <div class="field">
+                                    <label>Sport</label>
+                                    <input type="text" id="admWinSport" required placeholder="Chess" class="input">
+                                </div>
+                                <div class="field span-2">
+                                    <label>Competition</label>
+                                    <input type="text" id="admWinComp" required placeholder="Mumbai University Inter-Collegiate Chess" class="input">
+                                </div>
+                            </div>
+                            <div class="form-row-3">
+                                <div class="field">
+                                    <label>Level</label>
+                                    <select id="admWinLevel" class="input">
+                                        <option>Inter-college</option><option>University</option><option>Zonal</option>
+                                        <option>State</option><option>National</option><option>International</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label>Result</label>
+                                    <select id="admWinPos" class="input">
+                                        <option>Gold</option><option>Silver</option><option>Bronze</option>
+                                        <option>Winner</option><option>Runner-up</option><option>Finalist</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label>Month</label>
+                                    <input type="month" id="admWinDate" required class="input">
+                                </div>
+                            </div>
+                            <div class="form-row-3">
+                                <div class="field">
+                                    <label>Year of study</label>
+                                    <select id="admWinYear" class="input"><option value="">Not set</option><option>FE</option><option>SE</option><option>TE</option><option>BE</option></select>
+                                </div>
+                                <div class="field span-2">
+                                    <label>Team members (optional)</label>
+                                    <input type="text" id="admWinMembers" placeholder="Names separated by commas" class="input">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="field">
+                                    <label>Photo path (optional)</label>
+                                    <input type="text" id="admWinPhoto" placeholder="assets/winners/aditya.jpg" class="input">
+                                </div>
+                                <div class="field">
+                                    <label>One line about the win (optional)</label>
+                                    <input type="text" id="admWinNote" placeholder="Unbeaten in 7 rounds" class="input">
+                                </div>
+                            </div>
+                            <div><button type="submit" class="btn btn-primary">Add winner</button></div>
+                        </form>
+                    </div>
+                    <div class="panel publish-panel">
+                        <h4><i data-lucide="upload"></i>Publish to the website</h4>
+                        <p>Winners you add here show only on this computer until you publish them. Download the file, save it over <code>js/winners.js</code> in the project folder, then push to GitHub.</p>
+                        <button onclick="downloadWinnersFile()" class="btn btn-secondary"><i data-lucide="download"></i>Download winners.js</button>
+                    </div>
+                    <div>
+                        <p class="list-title">All winners</p>
+                        <div id="adminWinnersList" class="rows"></div>
+                    </div>
+                </div>
+
+                <!-- Registrations -->
+                <div id="adminTab-registrations" class="admin-tab-content hidden">
+                    <div class="bar">
+                        <label class="filter">
+                            Sport
+                            <select id="adminRegFilter" onchange="renderAdminRegistrations()" class="input">
+                                <option value="ALL">All sports</option>
+                            </select>
+                        </label>
+                        <button onclick="exportRegistrationsToCSV()" class="btn btn-secondary btn-sm">
+                            <i data-lucide="download"></i>
+                            Export CSV
+                        </button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data">
+                            <thead>
+                                <tr>
+                                    <th>Reg ID</th>
+                                    <th>Sport</th>
+                                    <th>Team</th>
+                                    <th>Department</th>
+                                    <th>Captain</th>
+                                    <th>Players</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminRegTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sport forms -->
+                <div id="adminTab-tournaments" class="admin-tab-content hidden stack">
+                    <div class="panel">
+                        <h4><i data-lucide="plus"></i>New sport form</h4>
+                        <form id="adminTournForm" class="form">
+                            <div class="form-row">
+                                <div class="field">
+                                    <label>Tournament name</label>
+                                    <input type="text" id="admTournName" required placeholder="Footvolley Open 2027" class="input">
+                                </div>
+                                <div class="field">
+                                    <label>Sport</label>
+                                    <input type="text" id="admTournSport" required placeholder="Footvolley" class="input">
+                                </div>
+                            </div>
+                            <div class="form-row-3">
+                                <div class="field">
+                                    <label>Entries close</label>
+                                    <input type="date" id="admTournDeadline" required class="input">
+                                </div>
+                                <div class="field">
+                                    <label>Event dates</label>
+                                    <input type="text" id="admTournDates" placeholder="Jan 09 - Jan 11" class="input">
+                                </div>
+                                <div class="field">
+                                    <label>Venue</label>
+                                    <input type="text" id="admTournVenue" placeholder="VCET Main Ground" class="input">
+                                </div>
+                            </div>
+                            <div class="form-row-3">
+                                <div class="field">
+                                    <label>Squad size</label>
+                                    <input type="text" id="admTournSize" placeholder="6 playing + 3 subs" class="input">
+                                </div>
+                                <div class="field">
+                                    <label>Minimum players</label>
+                                    <input type="number" id="admTournMin" value="6" min="1" class="input">
+                                </div>
+                                <div class="field">
+                                    <label>Event heads and phone</label>
+                                    <input type="text" id="admTournHeads" placeholder="Yash Patil (+91 84212 01306)" class="input">
+                                </div>
+                            </div>
+                            <div><button type="submit" class="btn btn-primary">Open registration</button></div>
+                        </form>
+                    </div>
+                    <div id="adminTournamentsList" class="rows" style="max-height:none"></div>
+                </div>
+
+                <!-- Media -->
+                <div id="adminTab-gallery" class="admin-tab-content hidden stack">
+                    <div class="panel">
+                        <h4><i data-lucide="image-plus"></i>Add a photo or YouTube video</h4>
+                        <form id="adminGalleryForm" class="form">
+                            <div class="form-row-3">
+                                <div class="field">
+                                    <label>Title</label>
+                                    <input type="text" id="admGalTitle" required placeholder="Kabaddi final 2025" class="input">
+                                </div>
+                                <div class="field">
+                                    <label>Edition</label>
+                                    <select id="admGalYear" class="input">
+                                        <option selected>2026</option>
+                                        <option>2025</option>
+                                        <option>2024</option>
+                                        <option>2023</option>
+                                        <option>2022</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label>Sport or tag</label>
+                                    <input type="text" id="admGalSport" placeholder="Aftermovie" class="input">
+                                </div>
+                            </div>
+                            <div class="form-row-3">
+                                <div class="field">
+                                    <label>Type</label>
+                                    <select id="admGalType" class="input">
+                                        <option value="video">YouTube video</option>
+                                        <option value="image">Photo</option>
+                                    </select>
+                                </div>
+                                <div class="field span-2">
+                                    <label>Link or photo</label>
+                                    <div class="with-upload">
+                                        <input type="text" id="admGalUrl" placeholder="https://youtu.be/" class="input">
+                                        <label class="upload-btn" title="Upload photo">
+                                            <i data-lucide="upload"></i>
+                                            <input type="file" id="admGalFileInput" accept="image/*" class="hidden">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Caption</label>
+                                <input type="text" id="admGalCaption" placeholder="One line about the moment" class="input">
+                            </div>
+                            <div><button type="submit" class="btn btn-primary">Add to past editions</button></div>
+                        </form>
+                    </div>
+                    <div id="adminGalleryList" class="rows"></div>
+                </div>
+
+                <!-- Trivia -->
+                <div id="adminTab-trivia" class="admin-tab-content hidden stack">
+                    <div class="panel">
+                        <h4><i data-lucide="plus"></i>New trivia question</h4>
+                        <form id="adminTriviaForm" class="form">
+                            <div class="form-row">
+                                <div class="field">
+                                    <label>Sport</label>
+                                    <input type="text" id="admTrivSport" required placeholder="Kabaddi" class="input">
+                                </div>
+                                <div class="field">
+                                    <label>Correct option</label>
+                                    <select id="admTrivCorrect" class="input">
+                                        <option value="0">A</option>
+                                        <option value="1">B</option>
+                                        <option value="2">C</option>
+                                        <option value="3">D</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Question</label>
+                                <input type="text" id="admTrivQuestion" required class="input">
+                            </div>
+                            <div class="form-row">
+                                <input type="text" id="admTrivOpt1" required placeholder="Option A" class="input">
+                                <input type="text" id="admTrivOpt2" required placeholder="Option B" class="input">
+                                <input type="text" id="admTrivOpt3" required placeholder="Option C" class="input">
+                                <input type="text" id="admTrivOpt4" required placeholder="Option D" class="input">
+                            </div>
+                            <div class="field">
+                                <label>Explanation</label>
+                                <input type="text" id="admTrivExp" placeholder="The fact behind the answer" class="input">
+                            </div>
+                            <div><button type="submit" class="btn btn-primary">Add question</button></div>
+                        </form>
+                    </div>
+                    <div id="adminTriviaList" class="rows"></div>
+                </div>
+
+                <!-- Backup -->
+                <div id="adminTab-export" class="admin-tab-content hidden">
+                    <div class="backup-grid">
+                        <div class="panel">
+                            <h4><i data-lucide="download"></i>Download backup</h4>
+                            <p>All bulletins, standings, sport forms and registered teams as one JSON file.</p>
+                            <button onclick="exportDataJSON()" class="btn btn-secondary">Download avahan_data.json</button>
+                        </div>
+                        <div class="panel">
+                            <h4><i data-lucide="upload"></i>Restore backup</h4>
+                            <p>Load a backup file saved by another committee member.</p>
+                            <input type="file" id="importJsonFileInput" accept=".json" onchange="importDataJSON(event)" class="file-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/winners.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/admin-winners.js"></script>
+</body>
+</html>
