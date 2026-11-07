@@ -1,65 +1,56 @@
 /**
- * AVAHAN 2027 · Sports Committee, arranged by designation
+ * AVAHAN 2027 · Sports Committee
+ *
+ * The page shows three levels, in this order:
+ *     Faculty Coordinator  →  Heads  →  Deputy Heads
  *
  * HOW TO ADD OR EDIT MEMBERS
  * Add one line per person to COMMITTEE below. Keep the quotes and commas.
- *   name         Full name
- *   designation  Their post, e.g. "Joint Sports Secretary", "Treasurer"
- *   phone        Shown on the card and tappable to call (leave "" to hide)
- *   sports       Optional, the sport(s) an Event Head runs, e.g. ["Kabaddi"]
- *   photo        Optional, only if the photo file name is different (see below)
+ *   name    Full name
+ *   level   "Faculty Coordinator", "Head" or "Deputy Head"
+ *   post    Optional, their specific post, e.g. "Sports Secretary", "Treasurer".
+ *           Shown on their card. Leave "" if they have none.
+ *   phone   Optional, shown on the card and tappable to call ("" to hide)
+ *   photo   Optional, only if the photo file name is different (see below)
  *
- * The page groups people by designation in the order of DESIGNATION_ORDER.
- * A designation not in that list still shows, after the listed ones.
- * Designations with nobody in them are hidden automatically.
+ * People appear in the order you list them. A level with nobody in it is hidden.
  *
  * HOW TO ADD PHOTOS (no code needed)
  * Put each photo in  assets/committee/  named after the person in lowercase
  * with dashes, as a .jpg:   Milind Sonkar  →  assets/committee/milind-sonkar.jpg
  * Until a photo is there, the card shows the person's initials.
+ *
+ * Example lines (copy, remove the //, fill in):
+ *   // { name: "Full Name", level: "Faculty Coordinator", post: "", phone: "" },
+ *   // { name: "Full Name", level: "Deputy Head", post: "Deputy Sports Secretary", phone: "" },
  */
 
-const DESIGNATION_ORDER = [
-    "Faculty In-charge",
-    "Sports Secretary",
-    "Joint Sports Secretary",
-    "General Secretary",
-    "Treasurer",
-    "Joint Treasurer",
-    "Technical Head",
-    "Publicity Head",
-    "Design Head",
-    "Event Head",
-    "Committee Member"
+const COMMITTEE_LEVELS = [
+    { level: "Faculty Coordinator", title: "Faculty Coordinator", plural: "Faculty Coordinators", color: "#2346c8" },
+    { level: "Head",                title: "Head",                plural: "Heads",                color: "#d7263d" },
+    { level: "Deputy Head",         title: "Deputy Head",         plural: "Deputy Heads",         color: "#1f9e5a" }
 ];
 
 const COMMITTEE = [
-    { name: "Milind Sonkar",        designation: "Sports Secretary", phone: "+91 99230 16679", sports: ["Tug of War"] },
+    { name: "Jaydeep Chougule", level: "Faculty Coordinator", post: "", phone: "" },
 
-    { name: "Vinayak Kokkul",       designation: "Event Head", phone: "+91 87677 76929", sports: ["Box Cricket"] },
-    { name: "Viresh Rathod",        designation: "Event Head", phone: "+91 78750 54595", sports: ["Box Cricket", "Girls Cricket"] },
-    { name: "Pratham Shetty",       designation: "Event Head", phone: "+91 81084 58431", sports: ["Overarm Cricket"] },
-    { name: "Vedant Chaudhari",     designation: "Event Head", phone: "+91 84079 54583", sports: ["Overarm Cricket"] },
-    { name: "Aditi Rasal",          designation: "Event Head", phone: "+91 89836 27852", sports: ["Girls Cricket"] },
-    { name: "Yash Patil",           designation: "Event Head", phone: "+91 84212 01306", sports: ["Rink Football"] },
-    { name: "Nirmit Breed",         designation: "Event Head", phone: "+91 93569 87841", sports: ["Rink Football"] },
-    { name: "Dhruv Save",           designation: "Event Head", phone: "+91 98238 25212", sports: ["Kabaddi"] },
-    { name: "Soham Patkar",         designation: "Event Head", phone: "+91 87884 91221", sports: ["Kabaddi"] },
-    { name: "Chaitanya Waingankar", designation: "Event Head", phone: "+91 82370 32905", sports: ["Volleyball"] },
-    { name: "Harshal Patil",        designation: "Event Head", phone: "+91 85308 68739", sports: ["Volleyball"] },
-    { name: "Arya Vartak",          designation: "Event Head", phone: "+91 93224 03223", sports: ["Throwball"] },
-    { name: "Mehek Rajput",         designation: "Event Head", phone: "+91 93269 64177", sports: ["Throwball"] },
-    { name: "Shreyas Pathe",        designation: "Event Head", phone: "+91 86377 17076", sports: ["Badminton"] },
-    { name: "Bhargavi Atre",        designation: "Event Head", phone: "+91 90213 25349", sports: ["Badminton"] },
-    { name: "Paras Jadhav",         designation: "Event Head", phone: "+91 70715 22444", sports: ["Tug of War"] },
-    { name: "Anuj Newalkar",        designation: "Event Head", phone: "+91 88578 60259", sports: ["Athletics"] },
-    { name: "Pranav Balgude",       designation: "Event Head", phone: "+91 92211 01444", sports: ["Athletics"] },
-    { name: "Atharva Sane",         designation: "Event Head", phone: "+91 87677 35084", sports: ["Chess"] },
-    { name: "Aarya Jadhav",         designation: "Event Head", phone: "+91 99873 71146", sports: ["Chess"] },
-    { name: "Atharv Chavan",        designation: "Event Head", phone: "+91 77580 47564", sports: ["Table Tennis"] },
-    { name: "Rohan Parab",          designation: "Event Head", phone: "+91 76665 88933", sports: ["Table Tennis"] },
-    { name: "Ganesh Joshi",         designation: "Event Head", phone: "+91 87679 59024", sports: ["Carrom"] },
-    { name: "Tanvi Patil",          designation: "Event Head", phone: "+91 76203 90416", sports: ["Carrom"] },
-    { name: "Dhruv Gharat",         designation: "Event Head", phone: "+91 72761 28403", sports: ["Arm Wrestling"] },
-    { name: "Dhruv Kotian",         designation: "Event Head", phone: "+91 92842 19008", sports: ["Arm Wrestling"] }
+    { name: "Milind Sonkar", level: "Head", post: "Sports Secretary", phone: "+91 99230 16679" },
+    { name: "Aadi", level: "Head", post: "", phone: "" },
+    { name: "Akshat", level: "Head", post: "", phone: "" },
+    { name: "Chetan", level: "Head", post: "", phone: "" },
+    { name: "Dhruv Kotian", level: "Head", post: "", phone: "" },
+    { name: "Farhan", level: "Head", post: "", phone: "" },
+    { name: "Harsh Uradya", level: "Head", post: "", phone: "" },
+    { name: "Hassan", level: "Head", post: "", phone: "" },
+    { name: "Jheel", level: "Head", post: "", phone: "" },
+    { name: "Khushtar", level: "Head", post: "", phone: "" },
+    { name: "Kimayaa", level: "Head", post: "", phone: "" },
+    { name: "Mehek Rajput", level: "Head", post: "", phone: "" },
+    { name: "Parth", level: "Head", post: "", phone: "" },
+    { name: "Pranav Balgude", level: "Head", post: "", phone: "" },
+    { name: "Prasath", level: "Head", post: "", phone: "" },
+    { name: "Seon D'Silva", level: "Head", post: "", phone: "" },
+    { name: "Shravan", level: "Head", post: "", phone: "" },
+    { name: "Shruti", level: "Head", post: "", phone: "" },
+    { name: "Yash Patil", level: "Head", post: "", phone: "" }
 ];

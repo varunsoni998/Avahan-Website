@@ -1,6 +1,6 @@
 /**
  * AVAHAN 2027 · sports motion
- * - Scroll progress: a cricket ball rolls along a turf strip under the menu
+ * - Scroll: balls fly off the hero board, and the sports strip speeds up or reverses with your scroll
  * - Click: main buttons launch a ball (the card's own sport on sport cards)
  * - Sports section: a bat swings and hits a six when it scrolls into view
  * - Trivia: right answer = goal, wrong answer = off the post
@@ -63,29 +63,60 @@
         launch(x, y, kind);
     });
 
-    /* ---------------- Scroll progress: ball on a pitch ---------------- */
-    function setupProgress() {
-        const nav = document.querySelector('.nav');
-        if (!nav) return;
-        const track = document.createElement('div');
-        track.className = 'pitch-progress';
-        track.setAttribute('aria-hidden', 'true');
-        track.innerHTML = `<span class="pitch-fill"></span><span class="pitch-ball">${BALLS.cricket}</span>`;
-        nav.appendChild(track);
-        const fill = track.querySelector('.pitch-fill');
-        const ball = track.querySelector('.pitch-ball');
+    /* ---------------- Scroll: balls fly off the hero ---------------- */
+    function setupHeroBalls() {
+        const board = document.querySelector('.rivalry');
+        if (!board || reduce) return;
+        const set = [
+            { kind: 'football', cls: 'hb-1', dx: -0.3, dy: -0.55, spin: 0.8 },
+            { kind: 'cricket',  cls: 'hb-2', dx: 0.4,  dy: -0.35, spin: -1.2 },
+            { kind: 'shuttle',  cls: 'hb-3', dx: 0.15, dy: -0.7, spin: 0.35 }
+        ];
+        const els = set.map(b => {
+            const el = document.createElement('span');
+            el.className = 'hero-ball ' + b.cls;
+            el.setAttribute('aria-hidden', 'true');
+            el.innerHTML = BALLS[b.kind];
+            board.appendChild(el);
+            return { el, ...b };
+        });
         let ticking = false;
         const update = () => {
-            const max = document.documentElement.scrollHeight - window.innerHeight;
-            const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-            const w = track.clientWidth - 18;
-            fill.style.transform = `scaleX(${p})`;
-            ball.style.transform = `translateX(${p * w}px) rotate(${p * 1440}deg)`;
+            const y = Math.min(window.scrollY, 900);
+            els.forEach(b => {
+                b.el.style.transform = `translate(${y * b.dx}px, ${y * b.dy}px) rotate(${y * b.spin}deg)`;
+                b.el.style.opacity = String(Math.max(0, 1 - y / 900));
+            });
             ticking = false;
         };
         window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-        window.addEventListener('resize', update);
         update();
+    }
+
+    /* ---------------- Scroll: the sports strip follows your scroll ---------------- */
+    function setupTape() {
+        const track = document.getElementById('sportsTape');
+        if (!track || reduce) return;
+        track.classList.add('js-driven');
+        let x = 0, lastY = window.scrollY, boost = 0, half = 0;
+        const measure = () => { half = track.scrollWidth / 2; };
+        measure();
+        window.addEventListener('resize', measure);
+        window.addEventListener('scroll', () => {
+            const y = window.scrollY;
+            boost += (y - lastY) * 0.35;
+            boost = Math.max(-40, Math.min(40, boost));
+            lastY = y;
+        }, { passive: true });
+        const tick = () => {
+            if (!half) measure();
+            x -= 0.6 + boost;
+            boost *= 0.9;
+            if (half) { if (x <= -half) x += half; if (x > 0) x -= half; }
+            track.style.transform = `translateX(${x}px)`;
+            requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
     }
 
     /* ---------------- Bat swing hits a six ---------------- */
@@ -187,7 +218,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        setupProgress();
+        setupHeroBalls();
+        setupTape();
         setupBatSwing();
         setupTriviaKick();
         setupBackToTop();

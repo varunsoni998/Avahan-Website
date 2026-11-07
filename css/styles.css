@@ -1139,11 +1139,15 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
 .fx-ball { position: fixed; z-index: 80; width: 40px; height: 40px; pointer-events: none; will-change: transform, opacity; }
 .fx-ball svg { width: 100%; height: 100%; display: block; }
 
-/* Scroll progress: ball rolling on a turf strip under the menu */
-.pitch-progress { position: absolute; left: 0; right: 0; bottom: -7px; height: 6px; background: #2b9a4f; border-bottom: 1.5px solid var(--ink); pointer-events: none; }
-.pitch-fill { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, #ffffff 0 12px, transparent 12px 24px); opacity: .55; transform-origin: left; transform: scaleX(0); }
-.pitch-ball { position: absolute; left: 0; top: -6px; width: 18px; height: 18px; will-change: transform; }
-.pitch-ball svg { width: 100%; height: 100%; display: block; }
+/* Scroll: balls on the hero board fly off as you scroll */
+.rivalry { position: relative; }
+.hero-ball { position: absolute; z-index: 2; pointer-events: none; will-change: transform, opacity; filter: drop-shadow(3px 3px 0 rgba(22, 19, 14, 0.9)); }
+.hero-ball svg { width: 100%; height: 100%; display: block; }
+.hb-1 { width: 76px; height: 76px; left: -34px; top: 34px; }
+.hb-2 { width: 54px; height: 54px; right: -22px; bottom: -18px; }
+.hb-3 { width: 60px; height: 60px; left: 42%; bottom: -26px; }
+.tape-track.js-driven { animation: none; will-change: transform; }
+@media (max-width: 640px) { .hb-1 { width: 56px; height: 56px; left: -10px; top: 40px; } .hb-2 { right: -6px; } .hb-3 { width: 48px; height: 48px; } }
 
 /* Bat swing: hits a six across the Sports heading */
 #registrations .wrap { position: relative; }
@@ -1241,7 +1245,6 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
     .shuttle-top { right: 14px; bottom: 14px; width: 48px; height: 48px; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .pitch-progress { display: none; }
     .bat-scene .bat { transform: rotate(40deg); }
     .bat-scene .six-ball { display: none; }
     .bat-scene .six-tag { transform: rotate(8deg); opacity: 1; }
@@ -1323,3 +1326,34 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
     .member-chip .head-info b { font-size: 14px; }
     .member-chip .head-info a { font-size: 12px; }
 }
+
+/* Committee: three-level structure */
+.ladder { list-style: none; display: grid; gap: 14px; justify-self: end; width: 100%; max-width: 440px; }
+.ladder li {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px;
+    background: var(--card); border: var(--border); border-radius: var(--r-lg);
+    box-shadow: var(--pop);
+    border-left: 12px solid var(--c);
+}
+.ladder li:nth-child(2) { margin-left: 32px; }
+.ladder li:nth-child(3) { margin-left: 64px; }
+.ladder span { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ink); background: var(--c); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--font-varsity); font-size: 18px; flex-shrink: 0; }
+.ladder b { font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 1; text-transform: uppercase; }
+.level-step { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--ink); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-varsity); font-size: 15px; flex-shrink: 0; }
+.bearer-level { font-size: 13px; font-weight: 600; color: var(--ink-3); margin-top: -4px; }
+.bearer-grid.faculty { grid-template-columns: repeat(3, 1fr); }
+.bearer.big { padding-top: 28px; }
+.avatar.lg { position: relative; left: auto; bottom: auto; transform: none; width: 140px; height: 140px; margin-bottom: 6px; }
+.avatar.lg .avatar-initials { font-size: 44px; }
+.bearer.big h3 { font-size: 34px; }
+@media (max-width: 1023px) { .ladder { justify-self: start; } .bearer-grid.faculty { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) {
+    .ladder li:nth-child(2) { margin-left: 16px; }
+    .ladder li:nth-child(3) { margin-left: 32px; }
+    .ladder b { font-size: 22px; }
+    .bearer-grid.faculty { grid-template-columns: 1fr; }
+}
+.chip-level { font-size: 12px; font-weight: 700; color: var(--ink-3); }
+.desig-group .bearer-grid + .people-grid { margin-top: 16px; }
+.bearer-grid.faculty .bearer.big { grid-column: span 1; }
