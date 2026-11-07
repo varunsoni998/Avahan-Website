@@ -1,6 +1,7 @@
 /**
- * Committee page · Sports Secretary up top, then one compact block per sport
- * with that sport's event heads side by side. Data comes from js/committee.js.
+ * Committee page · members grouped by designation (js/committee.js).
+ * The top post (e.g. Sports Secretary) gets the feature card in the hero.
+ * Office bearers show as large cards, bigger groups (e.g. Event Heads) as a compact grid.
  */
 
 const SPORT_COLOR = {
@@ -9,6 +10,7 @@ const SPORT_COLOR = {
     'chess': '#ffc82c', 'table': '#1a5fb4', 'carrom': '#e8b26a', 'arm': '#16130e'
 };
 const LIGHT_SPORTS = ['chess', 'carrom'];
+const GROUP_COLORS = ['#2346c8', '#1f9e5a', '#f26a1b', '#6a3fb5', '#0f9b8e', '#d7263d'];
 
 let teamQuery = '';
 
@@ -30,6 +32,14 @@ function initialsOf(name) {
     return String(name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0].toUpperCase()).join('');
 }
 function telHref(phone) { return 'tel:' + String(phone || '').replace(/[^\d+]/g, ''); }
+function plural(designation, n) {
+    if (n === 1) return designation;
+    if (/head$/i.test(designation)) return designation + 's';
+    if (/member$/i.test(designation)) return designation + 's';
+    if (/secretary$/i.test(designation)) return designation.replace(/y$/i, 'ies');
+    if (/treasurer$/i.test(designation)) return designation + 's';
+    return designation;
+}
 
 function avatar(m, cls) {
     return `<span class="avatar ${cls || ''}">
@@ -38,7 +48,7 @@ function avatar(m, cls) {
     </span>`;
 }
 
-/* The Sports Secretary and any other leads: big feature card */
+/* Hero feature card for the top post */
 function leadCard(m) {
     const first = (m.sports || [])[0];
     return `
@@ -48,7 +58,7 @@ function leadCard(m) {
             ${avatar(m)}
         </div>
         <div class="member-body">
-            <span class="member-role">${escapeHtml(m.role || '')}</span>
+            <span class="member-role">${escapeHtml(m.designation || '')}</span>
             <h3>${escapeHtml(m.name)}</h3>
             ${(m.sports || []).length ? `<div class="member-sports"><span class="also">Also heads</span>${m.sports.map(sportTag).join('')}</div>` : ''}
             ${m.phone ? `<a class="member-phone mono" href="${telHref(m.phone)}"><i data-lucide="phone"></i>${escapeHtml(m.phone)}</a>` : ''}
@@ -56,60 +66,97 @@ function leadCard(m) {
     </article>`;
 }
 
-/* One person inside a sport block */
-function headRow(m) {
+/* Large card for office bearers */
+function bearerCard(m, color) {
     return `
-    <div class="head">
+    <article class="bearer" style="--grp:${color}">
+        ${avatar(m, 'md')}
+        <span class="bearer-role">${escapeHtml(m.designation || '')}</span>
+        <h3>${escapeHtml(m.name)}</h3>
+        ${(m.sports || []).length ? `<div class="member-sports">${m.sports.map(sportTag).join('')}</div>` : ''}
+        ${m.phone ? `<a class="member-phone mono" href="${telHref(m.phone)}"><i data-lucide="phone"></i>${escapeHtml(m.phone)}</a>` : ''}
+    </article>`;
+}
+
+/* Compact card for big groups like Event Heads */
+function compactCard(m) {
+    return `
+    <article class="member-chip">
         ${avatar(m, 'sm')}
         <div class="head-info">
             <b>${escapeHtml(m.name)}</b>
-            ${m.role && m.role !== 'Event Head' ? `<span class="head-role">${escapeHtml(m.role)}</span>` : ''}
+            ${(m.sports || []).length ? `<div class="person-sports">${m.sports.map(sportTag).join('')}</div>` : ''}
             ${m.phone ? `<a class="mono" href="${telHref(m.phone)}"><i data-lucide="phone"></i>${escapeHtml(m.phone)}</a>` : ''}
         </div>
-    </div>`;
+    </article>`;
+}
+
+function groupByDesignation(list) {
+    const order = typeof DESIGNATION_ORDER !== 'undefined' ? DESIGNATION_ORDER : [];
+    const map = new Map();
+    list.forEach(m => {
+        const d = (m.designation || 'Committee Member').trim();
+        if (!map.has(d)) map.set(d, []);
+        map.get(d).push(m);
+    });
+    const rank = d => { const i = order.findIndex(o => o.toLowerCase() === d.toLowerCase()); return i === -1 ? order.length : i; };
+    return [...map.entries()].sort((a, b) => rank(a[0]) - rank(b[0]));
 }
 
 function renderCommittee() {
     const leadsEl = document.getElementById('teamLeads');
-    const gridEl = document.getElementById('teamGrid');
+    const groupsEl = document.getElementById('teamGroups');
     const countEl = document.getElementById('teamCount');
-    if (!gridEl) return;
+    if (!groupsEl) return;
 
-    const leads = typeof COMMITTEE_LEADS !== 'undefined' ? COMMITTEE_LEADS : [];
-    const heads = typeof COMMITTEE_EVENT_HEADS !== 'undefined' ? COMMITTEE_EVENT_HEADS : [];
+    const all = typeof COMMITTEE !== 'undefined' ? COMMITTEE : [];
+    const groups = groupByDesignation(all);
+    if (countEl) countEl.textContent = `${all.length} members`;
 
-    if (leadsEl && !leadsEl.dataset.done) { leadsEl.innerHTML = leads.map(leadCard).join(''); leadsEl.dataset.done = '1'; }
-    if (countEl) countEl.textContent = `${new Set(leads.concat(heads).map(m => m.name)).size} members`;
-
-    // Group everyone by the sport they head, in the order sports first appear
-    const groups = new Map();
-    leads.concat(heads).forEach(m => (m.sports || []).forEach(s => {
-        if (!groups.has(s)) groups.set(s, []);
-        if (!groups.get(s).some(x => x.name === m.name)) groups.get(s).push(m);
-    }));
-
-    const q = teamQuery.trim().toLowerCase();
-    const blocks = [...groups.entries()].filter(([sport, people]) =>
-        !q || sport.toLowerCase().includes(q) || people.some(p => p.name.toLowerCase().includes(q)));
-
-    if (blocks.length === 0) {
-        gridEl.innerHTML = `<div class="empty"><i data-lucide="search"></i><p>No sport or member matches "${escapeHtml(teamQuery)}"</p></div>`;
-        refreshIcons();
-        return;
+    // The first designation (if 1 or 2 people) becomes the hero feature
+    let rest = groups;
+    if (groups.length && groups[0][1].length <= 2) {
+        if (leadsEl && !leadsEl.dataset.done) { leadsEl.innerHTML = groups[0][1].map(leadCard).join(''); leadsEl.dataset.done = '1'; }
+        rest = groups.slice(1);
     }
 
-    gridEl.innerHTML = blocks.map(([sport, people]) => {
-        const k = sportKey(sport);
-        const light = LIGHT_SPORTS.includes(k);
-        return `
-        <article class="sport-block">
-            <header class="sport-head ${light ? 'light' : ''}">
-                <img src="${artForSport(sport)}" alt="" aria-hidden="true">
-                <h3>${escapeHtml(sport)}</h3>
-            </header>
-            <div class="heads-list">${people.map(headRow).join('')}</div>
-        </article>`;
-    }).join('');
+    const q = teamQuery.trim().toLowerCase();
+    const match = m => !q || m.name.toLowerCase().includes(q) || (m.designation || '').toLowerCase().includes(q) || (m.sports || []).some(s => s.toLowerCase().includes(q));
+
+    // Small posts (up to 4 people each) share one "Office bearers" row, in designation order.
+    // Big groups (e.g. Event Heads) get their own section with compact cards.
+    const small = rest.filter(([, p]) => p.length <= 4);
+    const big = rest.filter(([, p]) => p.length > 4);
+    const sections = [];
+
+    const bearers = small.flatMap(([, p], gi) => p.map(m => ({ m, color: GROUP_COLORS[gi % GROUP_COLORS.length] }))).filter(x => match(x.m));
+    if (bearers.length) {
+        sections.push(`
+        <section class="desig-group">
+            <div class="desig-head">
+                <h3><span class="desig-dot" style="background:var(--red)"></span>Office bearers</h3>
+                <span class="desig-count num">${small.reduce((n, [, p]) => n + p.length, 0)}</span>
+            </div>
+            <div class="bearer-grid">${bearers.map(x => bearerCard(x.m, x.color)).join('')}</div>
+        </section>`);
+    }
+
+    big.forEach(([designation, people], gi) => {
+        const shown = people.filter(match);
+        if (!shown.length) return;
+        const color = GROUP_COLORS[(gi + 1) % GROUP_COLORS.length];
+        sections.push(`
+        <section class="desig-group">
+            <div class="desig-head">
+                <h3><span class="desig-dot" style="background:${color}"></span>${escapeHtml(plural(designation, people.length))}</h3>
+                <span class="desig-count num">${people.length}</span>
+            </div>
+            <div class="people-grid">${shown.map(compactCard).join('')}</div>
+        </section>`);
+    });
+    const html = sections.join('');
+
+    groupsEl.innerHTML = html || `<div class="empty"><i data-lucide="search"></i><p>No member matches "${escapeHtml(teamQuery)}"</p></div>`;
     refreshIcons();
 }
 

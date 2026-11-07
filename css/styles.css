@@ -1271,3 +1271,55 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
 
 @media (max-width: 1023px) { .sport-blocks { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px) { .sport-blocks { grid-template-columns: 1fr; gap: 16px; } }
+
+/* Committee: grouped by designation */
+.desig-groups { display: grid; gap: 48px; }
+.desig-head { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; margin-bottom: 20px; border-bottom: var(--border); }
+.desig-head h3 { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 400; font-size: 36px; line-height: 1; text-transform: uppercase; }
+.desig-dot { width: 16px; height: 16px; border-radius: 4px; border: 2px solid var(--ink); transform: rotate(45deg); }
+.desig-count { margin-left: auto; height: 30px; min-width: 30px; padding: 0 10px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--ink); color: #fff; font-weight: 700; font-size: 14px; }
+
+.bearer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.bearer {
+    background: var(--card); border: var(--border); border-radius: var(--r-lg); box-shadow: var(--pop);
+    padding: 24px 18px 20px; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    border-top: 10px solid var(--grp);
+}
+.avatar.md { position: relative; left: auto; bottom: auto; transform: none; width: 112px; height: 112px; margin-bottom: 6px; }
+.avatar.md .avatar-initials { font-size: 36px; }
+.bearer-role { font-size: 12px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 0.05em; }
+.bearer h3 { font-family: var(--font-display); font-weight: 400; font-size: 28px; line-height: 1; text-transform: uppercase; }
+.bearer .member-phone { margin-top: 4px; padding-top: 0; }
+
+.people-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.member-chip {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: var(--card); border: var(--border); border-radius: var(--r-md);
+    box-shadow: var(--pop-sm);
+}
+.member-chip .head-info { gap: 4px; }
+.member-chip .head-info b { font-size: 15px; }
+.person-sports { display: flex; flex-wrap: wrap; gap: 4px; }
+.person-sports .sport-tag { height: 20px; font-size: 11px; padding: 0 6px; border-width: 1.5px; }
+.page-committee .section-head .search { width: 300px; }
+
+@media (max-width: 1180px) { .people-grid { grid-template-columns: repeat(3, 1fr); } .bearer-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1023px) { .people-grid, .bearer-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) {
+    .people-grid { grid-template-columns: 1fr; gap: 10px; }
+    .bearer-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .avatar.md { width: 84px; height: 84px; }
+    .bearer h3 { font-size: 22px; }
+    .desig-head h3 { font-size: 28px; }
+    .page-committee .section-head .search { width: 100%; }
+}
+@media (max-width: 640px) {
+    .people-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .member-chip { flex-direction: column; text-align: center; padding: 14px 8px; gap: 8px; }
+    .member-chip .head-info { align-items: center; }
+    .member-chip .person-sports { justify-content: center; }
+    .member-chip .head-info b { font-size: 14px; }
+    .member-chip .head-info a { font-size: 12px; }
+}
