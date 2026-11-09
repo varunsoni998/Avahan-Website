@@ -1759,57 +1759,51 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
    -------------------------------------------------------------------------- */
 .section > .wrap, .footer > .wrap { position: relative; z-index: 2; }
 
-/* 1. Dribble: a football bounces along in the margin as you scroll */
-.dribble {
-    position: fixed; right: 28px; bottom: 18vh; z-index: 25;
-    width: 40px; height: 40px; pointer-events: none;
-    opacity: 0; transition: opacity 300ms;
-}
-.dribble.on { opacity: 1; }
-.dribble-ball { position: absolute; inset: 0; transform-origin: 50% 100%; will-change: transform; }
-.dribble-ball svg { width: 100%; height: 100%; display: block; }
-.dribble-shadow { position: absolute; left: 4px; right: 4px; bottom: -6px; height: 8px; border-radius: 50%; background: rgba(22, 19, 14, 0.55); will-change: transform, opacity; }
-@media (max-width: 1100px) { .dribble { display: none; } }
-
-/* 2. Mowed pitch: coloured sections roll in lane by lane */
+/* 2. Mowed pitch: coloured sections roll in lane by lane (plays once, on its own timer) */
 .section.mowed { background: transparent; position: relative; }
 .mow-lanes { position: absolute; inset: 0; z-index: 0; display: flex; pointer-events: none; }
-.mow-lanes span { flex: 1; background: var(--lane); transform-origin: 50% 0; transform: scaleY(0); will-change: transform; }
+.mow-lanes span {
+    flex: 1; background: var(--lane); transform-origin: 50% 0; transform: scaleY(0);
+    transition: transform 900ms cubic-bezier(.65,0,.25,1); transition-delay: calc(var(--i) * 55ms);
+}
 .mow-lanes span.dark { background: var(--lane-dark); transform-origin: 50% 100%; }
+.mowed.in .mow-lanes span { transform: scaleY(1); }
 .section-blue.mowed { --lane: #2346c8; --lane-dark: #2141bb; }
 .section-yellow.mowed { --lane: #ffc82c; --lane-dark: #f7c021; }
 
-/* 3. Floodlights over the dark section */
+/* 3. Floodlights over the dark section: switch on once, then sweep slowly */
 .section-night { position: relative; overflow: hidden; }
-.floodlights { position: absolute; inset: 0; z-index: 0; pointer-events: none; --on: 0; --sweep: 0deg; }
+.floodlights { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .floodlights .beam {
     position: absolute; top: -40px; width: 70vw; max-width: 900px; height: 130%;
     background: linear-gradient(180deg, rgba(255, 247, 214, 0.28), rgba(255, 247, 214, 0.06) 60%, transparent 85%);
     clip-path: polygon(0 0, 14% 0, 100% 100%, 30% 100%);
-    opacity: var(--on);
-    transition: opacity 600ms cubic-bezier(.2,.9,.3,1);
+    opacity: 0; transition: opacity 1200ms ease 250ms;
     mix-blend-mode: screen;
 }
-.floodlights .beam.left { left: -4%; transform-origin: 0 0; transform: rotate(calc(var(--sweep) * -1)); }
-.floodlights .beam.right { right: -4%; transform-origin: 100% 0; transform: scaleX(-1) rotate(calc(var(--sweep) * -1)); }
+.floodlights .beam.left { left: -4%; transform-origin: 0 0; animation: beamL 9s ease-in-out infinite alternate; }
+.floodlights .beam.right { right: -4%; transform-origin: 100% 0; animation: beamR 9s ease-in-out infinite alternate; }
+@keyframes beamL { from { transform: rotate(6deg); } to { transform: rotate(-8deg); } }
+@keyframes beamR { from { transform: scaleX(-1) rotate(6deg); } to { transform: scaleX(-1) rotate(-8deg); } }
 .floodlights .lamp {
     position: absolute; top: 14px; width: 54px; height: 22px; border-radius: 6px;
     background: #2a2d3a; border: 2px solid #3d4152;
-    box-shadow: 0 0 0 rgba(255, 240, 190, 0);
-    transition: background 300ms, box-shadow 600ms;
+    transition: background 400ms ease, box-shadow 900ms ease;
 }
 .floodlights .lamp.left { left: 24px; }
 .floodlights .lamp.right { right: 24px; }
-.floodlights[style*="--on: 1"] .lamp, .floodlights[style*="--on:1"] .lamp { background: #fff6d6; box-shadow: 0 0 30px 8px rgba(255, 240, 190, 0.55); }
+.floodlights.on .beam { opacity: 1; }
+.floodlights.on .lamp { background: #fff6d6; box-shadow: 0 0 30px 8px rgba(255, 240, 190, 0.55); }
 
-/* 4. Scoreboard flip headlines */
+/* 4. Scoreboard flip headlines: letters flip down one after another */
 .flip-head .flip-word { display: inline-block; white-space: nowrap; }
-.flip-head .flip { display: inline-block; text-align: center; }
-.flip-head:not(.flipping):not(.flipped) .flip { opacity: 0; }
-.flip-head .flip.tick { animation: flipTick 90ms linear; }
-.flip-head .flip.locked { animation: flipLock 260ms cubic-bezier(.3,1.5,.5,1); }
-@keyframes flipTick { from { transform: perspective(300px) rotateX(70deg); opacity: .6; } to { transform: none; opacity: 1; } }
-@keyframes flipLock { 0% { transform: perspective(300px) rotateX(80deg); } 100% { transform: none; } }
+.flip-head .flip {
+    display: inline-block; opacity: 0;
+    transform: perspective(400px) rotateX(-90deg) translateY(-0.15em); transform-origin: 50% 0;
+    transition: transform 650ms cubic-bezier(.2,1.2,.4,1), opacity 300ms ease;
+    transition-delay: calc(var(--i) * 28ms);
+}
+.flip-head.flipped .flip { opacity: 1; transform: none; }
 
 /* 5. VAR line: a glowing offside line scans under highlighted words */
 .flip-head .hl { position: relative; display: inline-block; }
@@ -1820,8 +1814,8 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
     box-shadow: 0 0 10px currentColor;
 }
 .var-line i { position: absolute; right: -2px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: #fff; box-shadow: 0 0 12px 3px currentColor; opacity: 0; }
-.flip-head.flipped .var-line { transition: transform 700ms cubic-bezier(.6,0,.25,1); transform: scaleX(1); }
-.flip-head.flipped .var-line i { animation: varPing 900ms ease-out 700ms; }
+.flip-head.flipped .var-line { transition: transform 800ms cubic-bezier(.6,0,.25,1) var(--vd, 500ms); transform: scaleX(1); }
+.flip-head.flipped .var-line i { animation: varPing 900ms ease-out calc(var(--vd, 500ms) + 800ms); }
 @keyframes varPing { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(2.4); } }
 
 /* 6. Crowd wave on the jersey board */
@@ -1829,6 +1823,7 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
 @keyframes crowdWave { 0% { transform: none; } 45% { transform: translateY(-18px) scale(1.06) rotate(-4deg); } 100% { transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
-    .flip-head .flip { opacity: 1 !important; }
+    .flip-head .flip { opacity: 1 !important; transform: none !important; }
     .mow-lanes span { transform: none !important; }
+    .floodlights .beam { animation: none !important; }
 }
