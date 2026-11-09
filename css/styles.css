@@ -1753,3 +1753,54 @@ table.data .sub { display: block; font-size: 13px; color: var(--ink-3); }
 .intro-cracks polyline, .intro-cracks line { stroke-width: 2.4; }
 .intro-canvas { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
 .intro.broken { background: transparent; animation: none; }
+
+/* --------------------------------------------------------------------------
+   Scroll motion (js/scrollfx.js)
+   -------------------------------------------------------------------------- */
+/* Content always sits above the ribbon and the circle wipes */
+.section > .wrap, .footer > .wrap { position: relative; z-index: 2; }
+
+/* 1. The ball's journey */
+.ribbon { position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; overflow: visible; }
+.ribbon path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.ribbon-edge { stroke: var(--ink); stroke-width: 28; }
+.ribbon-line { stroke: var(--red); stroke-width: 22; }
+.ribbon-shine { stroke: rgba(255, 255, 255, 0.28); stroke-width: 4; transform: translate(-4px, -4px); }
+.ribbon-ball { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; will-change: transform; transition: opacity 200ms; filter: drop-shadow(2px 3px 0 rgba(22, 19, 14, 0.85)); }
+.ribbon-ball svg { width: 100%; height: 100%; display: block; }
+@media (max-width: 700px) {
+    .ribbon-edge { stroke-width: 13; }
+    .ribbon-line { stroke-width: 9; }
+    .ribbon-shine { display: none; }
+}
+
+/* 2. Circle wipes: coloured sections burst open from a circle */
+.section.wipe { background: transparent; position: relative; }
+.section.wipe::before {
+    content: ''; position: absolute; inset: 0; z-index: 0;
+    background: var(--wipe, var(--blue));
+    clip-path: circle(var(--r, 0%) at var(--wx, 80%) 0%);
+}
+.section-blue.wipe { --wipe: var(--blue); }
+.section-yellow.wipe { --wipe: var(--yellow); }
+.section-night.wipe { --wipe: var(--night); }
+
+/* 3. Headlines letter by letter */
+.letters .hw { display: inline-block; white-space: nowrap; }
+.letters .hl-ch { display: inline-block; opacity: 0; transform: translateY(70%) rotate(10deg) scale(.9); }
+.letters.in .hl-ch {
+    animation: letterDrop 560ms cubic-bezier(.3,1.45,.5,1) forwards;
+    animation-delay: calc(var(--i) * 28ms);
+}
+@keyframes letterDrop { to { opacity: 1; transform: none; } }
+.letters .hl { position: relative; display: inline-block; }
+.chalk-line { position: absolute; left: -2%; width: 104%; bottom: -0.14em; height: 0.24em; overflow: visible; pointer-events: none; }
+.chalk-line path { fill: none; stroke: currentColor; stroke-width: 5; stroke-linecap: round; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.letters.in .chalk-line path { transition: stroke-dashoffset 700ms cubic-bezier(.6,0,.3,1); transition-delay: calc(var(--n) * 28ms + 150ms); stroke-dashoffset: 0; }
+.section-blue .chalk-line, .section-night .chalk-line { color: var(--yellow); }
+.chalk-line { color: var(--ink); }
+.section h2 .hl .chalk-line { color: var(--ink); }
+.section-blue h2 .hl .chalk-line, .section-night h2 .hl .chalk-line { color: #fff; }
+@media (prefers-reduced-motion: reduce) {
+    .letters .hl-ch { opacity: 1; transform: none; }
+}

@@ -324,7 +324,6 @@
         setupHeroTitle();
         setupJerseys();
         setupCounters();
-        setupHeadings();
         setupRefCards();
         setupHeroBalls();
         setupTape();
