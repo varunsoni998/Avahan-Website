@@ -38,7 +38,7 @@
                 lanes.appendChild(l);
             }
             sec.prepend(lanes);
-            whenSeen(sec, s => s.classList.add('in'), '0px 0px 0px 0px');
+            whenSeen(sec, s => { s.classList.add('in'); setTimeout(() => s.classList.add('settled'), 900 + n * 55 + 100); }, '0px 0px 0px 0px');
         });
     }
 
@@ -51,6 +51,8 @@
             rig.innerHTML = '<span class="beam left"></span><span class="beam right"></span><span class="lamp left"></span><span class="lamp right"></span>';
             sec.prepend(rig);
             whenSeen(sec, () => rig.classList.add('on'));
+            // only sweep the beams while the section is on screen
+            new IntersectionObserver(es => es.forEach(en => rig.classList.toggle('live', en.isIntersecting))).observe(sec);
         });
     }
 
@@ -85,7 +87,7 @@
             const letters = [];
             wrapLetters(h, letters);
             letters.forEach((s, i) => s.style.setProperty('--i', i));
-            h.style.setProperty('--vd', Math.min(letters.length * 28, 900) + 'ms');
+            h.style.setProperty('--vd', Math.min(letters.length * 22, 800) + 'ms');
             h.classList.add('flip-head');
             h.setAttribute('aria-label', h.textContent.replace(/\s+/g, ' ').trim());
             h.querySelectorAll('.hl').forEach(hl => {
@@ -95,7 +97,15 @@
                 line.innerHTML = '<i></i>';
                 hl.appendChild(line);
             });
-            whenSeen(h, el => el.classList.add('flipped'));
+            whenSeen(h, el => {
+                el.classList.add('flipped');
+                // once played, turn the letters back into plain text so the page stays light
+                setTimeout(() => {
+                    el.querySelectorAll('.flip-word').forEach(w => w.replaceWith(document.createTextNode(w.textContent)));
+                    el.normalize();
+                    el.classList.add('done');
+                }, 600 + letters.length * 22 + 150);
+            });
         });
     }
 

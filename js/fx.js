@@ -91,10 +91,14 @@
             return { el, ...b };
         });
         let ticking = false;
+        let lastY = -1;
         const update = () => {
             const y = Math.min(window.scrollY, 900);
+            ticking = false;
+            if (y === lastY) return;   // already off the top: nothing to move
+            lastY = y;
             els.forEach(b => {
-                b.el.style.transform = `translate(${y * b.dx}px, ${y * b.dy}px) rotate(${y * b.spin}deg)`;
+                b.el.style.transform = `translate3d(${y * b.dx}px, ${y * b.dy}px, 0) rotate(${y * b.spin}deg)`;
                 b.el.style.opacity = String(Math.max(0, 1 - y / 900));
             });
             ticking = false;
@@ -118,15 +122,23 @@
             boost = Math.max(-40, Math.min(40, boost));
             lastY = y;
         }, { passive: true });
+        // only move the strip while it is on screen
+        let visible = true, running = false;
+        new IntersectionObserver(es => es.forEach(en => {
+            visible = en.isIntersecting;
+            if (visible && !running) { running = true; requestAnimationFrame(tick); }
+        })).observe(track);
         const tick = () => {
+            if (!visible) { running = false; return; }
             if (document.documentElement.classList.contains('show-intro')) { requestAnimationFrame(tick); return; }
             if (!half) measure();
             x -= 0.6 + boost;
             boost *= 0.9;
             if (half) { if (x <= -half) x += half; if (x > 0) x -= half; }
-            track.style.transform = `translateX(${x}px)`;
+            track.style.transform = `translate3d(${x}px,0,0)`;
             requestAnimationFrame(tick);
         };
+        running = true;
         requestAnimationFrame(tick);
     }
 
@@ -252,6 +264,7 @@
             }
         });
         h1.classList.add('bounce-in');
+        setTimeout(() => h1.classList.add('settled'), (i + 2) * 60 + 1000);
     }
 
     /* ---------------- Jerseys hang onto the board one by one ---------------- */
@@ -261,6 +274,7 @@
         if (!board) return;
         [...board.children].forEach((j, i) => j.style.setProperty('--i', i));
         board.classList.add('hang-in');
+        setTimeout(() => board.classList.add('settled'), board.children.length * 90 + 1300);
     }
 
     /* ---------------- Numbers count up when they come into view ---------------- */
